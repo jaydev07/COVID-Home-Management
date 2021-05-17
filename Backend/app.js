@@ -1,7 +1,6 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
-
 const app = express();
 
 const HttpError = require("./util/http-error");
@@ -42,11 +41,8 @@ mongoose
     .then(() => {
         const server = app.listen(8080,() => {
             console.log("server listening at 8080");
+            const schedule = require("./schedulers");
         });
-        const io = require("./socket").init(server);
-        io.on('connection',socket => {
-            console.log('Client connected');
-        })
     })
     .catch((err) => {
         console.log(err);
