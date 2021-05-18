@@ -41,7 +41,7 @@ mongoose
     .then(() => {
         const server = app.listen(8080,() => {
             console.log("server listening at 8080");
-            const schedule = require("./schedulers");
+            // const schedule = require("./schedulers");
         });
     })
     .catch((err) => {

@@ -3,7 +3,7 @@ const Doctor = require("../models/doctor-model");
 
 const signup = async (req,res,next) => {
     
-    const {name, email, password,accessKey, phoneNo, address, doctorLicense} = req.body;
+    const {name, email, password, phoneNo, address, doctorLicense} = req.body;
 
     let doctorFound;
     try{
@@ -21,7 +21,7 @@ const signup = async (req,res,next) => {
         name,
         email,
         password,
-        accessKey,
+        accessKey:null,
         phoneNo,
         address,
         doctorLicense,
@@ -61,10 +61,10 @@ const login = async (req,res,next) => {
 }
 
 const updateAccessKey = async (req,res,next) => {
-    const doctorId = req.body.patientId;
+    const doctorId = req.body.doctorId;
     const accessKey = req.body.accessKey;
 
-    let  doctorFound;
+    let doctorFound;
     try{
         doctorFound = await Doctor.findById(doctorId);
     }catch(err){

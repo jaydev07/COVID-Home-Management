@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const fetch = require("node-fetch");
 
 const HttpError = require("../util/http-error");
 const Patient = require("../models/patient-model");
