@@ -1,13 +1,12 @@
 const mongoose = require("mongoose");
 
-const io = require("../socket");
 const HttpError = require("../util/http-error");
 const Patient = require("../models/patient-model");
 const Doctor = require("../models/doctor-model");
 
 const signup = async (req,res,next) => {
     
-    const {name, email, password,accessKey, phoneNo, address} = req.body;
+    const {name, email, password, phoneNo, address} = req.body;
 
     let patientFound;
     try{
@@ -25,7 +24,7 @@ const signup = async (req,res,next) => {
         name,
         email,
         password,
-        accessKey,
+        accessKey:null,
         phoneNo,
         address,
         doctorIds:[],
@@ -66,6 +65,33 @@ const login = async (req,res,next) => {
 
     res.json({patient:patientFound.toObject({getters:true})});
 }
+
+const updateAccessKey = async (req,res,next) => {
+    const patientId = req.body.patientId;
+    const accessKey = req.body.accessKey;
+
+    let  patientFound;
+    try{
+        patientFound = await Patient.findById(patientId);
+    }catch(err){
+        console.log(err);
+        return next(new HttpError('Something went wrong',500));
+    }
+
+    if(!patientFound){
+        return next(new HttpError('Patient not found',500));
+    }
+
+    patientFound.accessKey = accessKey;
+    try{
+        await patientFound.save();
+    }catch(err){
+        console.log(err);
+        return next(new HttpError('Patient not saved',500));
+    }
+
+    res.json({patient:patientFound.toObject({getters:true})})
+} 
 
 const getDoctorsNearBy = async (req,res,next) => {
 
@@ -173,7 +199,7 @@ const consultDoctor = async (req,res,next) => {
         await fetch('https://fcm.googleapis.com/fcm/send',{
             "method": 'POST',
             "headers":{
-                "Authorization":"key=" + "",
+                "Authorization":"key=" + "AAAAKNaJUws:APA91bESAgv4OUtCkTjlc_uQi5q1sPlx0XfBhS7hosvJBbXj-nVVvkT5suq3p4sTernalIZYQiIpDPXKR_AR1fUNqDBRVCbghFEseU2c9xsUUuzCz4w4LjGwTnl-dDUaQcLkq0D3l1vd",
                 "Content-Type": "application/json"
             },
             "body":JSON.stringify(notification_body)
@@ -186,10 +212,12 @@ const consultDoctor = async (req,res,next) => {
     }
 
     res.json({doctor:doctorFound.toObject({getters:true}) , patient:patientFound.toObject({getters:true})});
-
 }
+
+
 
 exports.signup = signup;
 exports.login = login;
 exports.getDoctorsNearBy = getDoctorsNearBy;
 exports.consultDoctor = consultDoctor;
+exports.updateAccessKey = updateAccessKey;

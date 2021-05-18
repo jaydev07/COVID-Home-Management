@@ -60,5 +60,33 @@ const login = async (req,res,next) => {
     res.json({doctor:doctorFound.toObject({getters:true})});
 }
 
+const updateAccessKey = async (req,res,next) => {
+    const doctorId = req.body.patientId;
+    const accessKey = req.body.accessKey;
+
+    let  doctorFound;
+    try{
+        doctorFound = await Doctor.findById(doctorId);
+    }catch(err){
+        console.log(err);
+        return next(new HttpError('Something went wrong',500));
+    }
+
+    if(!doctorFound){
+        return next(new HttpError('Doctor not found',500));
+    }
+
+    doctorFound.accessKey = accessKey;
+    try{
+        await doctorFound.save();
+    }catch(err){
+        console.log(err);
+        return next(new HttpError('Doctor not saved',500));
+    }
+
+    res.json({doctor:doctorFound.toObject({getters:true})})
+}
+
 exports.signup = signup;
 exports.login = login;
+exports.updateAccessKey = updateAccessKey;

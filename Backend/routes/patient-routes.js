@@ -11,4 +11,6 @@ router.post("/login", patientControllers.login);
 
 router.post("/consultDoctor/:patientId", patientControllers.consultDoctor);
 
+router.post("/update/accesskey" , patientControllers.updateAccessKey);
+
 module.exports = router;

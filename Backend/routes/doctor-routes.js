@@ -7,4 +7,6 @@ router.post("/signup", doctorControllers.signup);
 
 router.post("/login", doctorControllers.login);
 
+router.post("/update/accesskey" , doctorControllers.updateAccessKey);
+
 module.exports = router;
