@@ -1,13 +1,19 @@
 const mongoose = require("mongoose");
 const fetch = require("node-fetch");
+const bcrypt = require("bcrypt");
 
 const HttpError = require("../util/http-error");
 const Patient = require("../models/patient-model");
 const Doctor = require("../models/doctor-model");
 
 const signup = async (req,res,next) => {
-    
-    const {name, email, password, phoneNo, address} = req.body;
+
+    const email = req.body.email;
+    let password = req.body.password;
+    password = email.concat(password);
+
+    const salt = await bcrypt.genSalt();
+    password = await bcrypt.hash(password , salt);
 
     let patientFound;
     try{
@@ -22,12 +28,12 @@ const signup = async (req,res,next) => {
     }
 
     const newPatient = new Patient({
-        name,
-        email,
+        name:req.body.name,
+        email:req.body.email,
         password,
         accessKey:null,
-        phoneNo,
-        address,
+        phoneNo:req.body.phoneNo,
+        address:req.body.address,
         doctorIds:[],
         doctors:[],
         previousDiseases:[],
@@ -48,7 +54,8 @@ const signup = async (req,res,next) => {
 
 const login = async (req,res,next) => {
     
-    const {email,password} = req.body;
+    const email = req.body.email;
+    const password = email.concat(req.body.password);
 
     let patientFound;
     try{
@@ -60,8 +67,29 @@ const login = async (req,res,next) => {
 
     if(!patientFound){
         return next(new HttpError('Patient not found.Please signup!',500));
-    }else if(patientFound.password !== password){
-        return next(new HttpError('Incorrect password!',500));
+    }else{
+        const auth = await bcrypt.compare(password , patientFound.password);
+        if(!auth){
+            return next(new HttpError('Incorrect password!',500));
+        }
+    }
+
+    res.json({patient:patientFound.toObject({getters:true})});
+}
+
+const loginWithToken = async (req,res,next) => {
+    const token = req.body.token;
+
+    let patientFound;
+    try{
+        patientFound = await Patient.findOne({password:token}); 
+    }catch(err){
+        console.log(err);
+        return next(new HttpError('Something went wrong',500));
+    }
+
+    if(!patientFound){
+        return next(new HttpError('Token not matched.Redirect to login page!',500));
     }
 
     res.json({patient:patientFound.toObject({getters:true})});
@@ -222,3 +250,4 @@ exports.login = login;
 exports.getDoctorsNearBy = getDoctorsNearBy;
 exports.consultDoctor = consultDoctor;
 exports.updateAccessKey = updateAccessKey;
+exports.loginWithToken = loginWithToken;

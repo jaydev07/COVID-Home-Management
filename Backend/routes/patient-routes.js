@@ -9,6 +9,8 @@ router.post("/signup", patientControllers.signup);
 
 router.post("/login", patientControllers.login);
 
+router.post("/token/login", patientControllers.loginWithToken);
+
 router.post("/consultDoctor/:patientId", patientControllers.consultDoctor);
 
 router.post("/update/accesskey" , patientControllers.updateAccessKey);
