@@ -1,12 +1,12 @@
 const mongoose = require("mongoose");
 const fetch = require("node-fetch");
 const bcrypt = require("bcrypt");
+const jwt = require('jsonwebtoken');
+
 
 const HttpError = require("../util/http-error");
 const Patient = require("../models/patient-model");
 const Doctor = require("../models/doctor-model");
-
-const jwt = require('jsonwebtoken');
 
 const signup = async(req, res, next) => {
 

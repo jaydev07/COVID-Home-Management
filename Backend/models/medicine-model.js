@@ -4,8 +4,6 @@ const medicineSchema = new mongoose.Schema({
 
     name:{ type:String , required:true },
 
-    givenFor:{ type:String , required:true },
-
     duration:{type:Number , required:true},
 
     active:{type:Boolean , required:true},
@@ -22,7 +20,7 @@ const medicineSchema = new mongoose.Schema({
         afternoonBeforeL:{type:Boolean , required:true},
         afternoonAfterL:{type:Boolean , required:true},
         eveningBeforeD:{type:Boolean , required:true},
-        eveningAfterD:{type:Boolean , required:true},
+        eveningAfterD:{type:Boolean , required:true}
     }
 });
 

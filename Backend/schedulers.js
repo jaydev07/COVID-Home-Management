@@ -1,7 +1,8 @@
 const cron = require("node-cron");
+const fetch = require("node-fetch");
 const Patient = require("./models/patient-model");
 
-cron.schedule("01 04 16 * * *", async () => {
+cron.schedule("01 46 18 * * *", async () => {
     console.log("morningBeforeB");
     let patients;
     try{
@@ -10,10 +11,10 @@ cron.schedule("01 04 16 * * *", async () => {
         console.log(err);
         throw new Error("Somithing went wrong");
     }
-    console.log(patients);
 
     patients.forEach(async (patient) => {
         if(patient.prescribedMedicines.length > 0){
+            console.log(patient.name);
             let medicines = [];
             patient.prescribedMedicines.forEach(medicine => {
                 if(medicine.time.morningBeforeB){
