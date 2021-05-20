@@ -5,117 +5,131 @@ const bcrypt = require("bcrypt");
 const HttpError = require("../util/http-error");
 const Doctor = require("../models/doctor-model");
 
-const signup = async (req,res,next) => {
-    
+const jwt = require('jsonwebtoken');
+
+const signup = async(req, res, next) => {
+
     const email = req.body.email;
     let password = req.body.password;
     password = email.concat(password);
 
     const salt = await bcrypt.genSalt();
-    password = await bcrypt.hash(password , salt);
+    password = await bcrypt.hash(password, salt);
 
     let doctorFound;
-    try{
-        doctorFound = await Doctor.findOne({email:email});
-    }catch(err){
+    try {
+        doctorFound = await Doctor.findOne({ email: email });
+    } catch (err) {
         console.log(err);
-        return next(new HttpError('Something went wrong',500));
+        return next(new HttpError('Something went wrong', 500));
     }
 
-    if(doctorFound){
-        return next(new HttpError('Doctor already exists.Please login',500));
+    if (doctorFound) {
+        return next(new HttpError('Doctor already exists.Please login', 500));
     }
 
     const newDoctor = new Doctor({
-        name:req.body.name,
+        name: req.body.name,
         email,
         password,
-        accessKey:null,
-        phoneNo:req.body.phoneNo,
-        address:req.body.address,
-        doctorLicense:req.body.doctorLicense,
-        patientIds:[],
-        patients:[]
+        accessKey: null,
+        phoneNo: req.body.phoneNo,
+        address: req.body.address,
+        doctorLicense: req.body.doctorLicense,
+        patientIds: [],
+        patients: []
     });
 
-    try{
+    let token;
+
+    try {
         await newDoctor.save();
-    }catch(err){
+        token = jwt.sign({
+            email: newDoctor.email,
+            id: newDoctor._id
+        }, 'innoventX123');
+    } catch (err) {
         console.log(err);
-        return next(new HttpError('Something went wrong,Doctor not saved',500));
+        return next(new HttpError('Something went wrong,Doctor not saved', 500));
     }
 
-    res.json({doctor:newDoctor.toObject({getters:true})});
+    res.json({ doctor: newDoctor.toObject({ getters: true }), token });
 }
 
-const login = async (req,res,next) => {
-    
+const login = async(req, res, next) => {
+
     const email = req.body.email;
     const password = email.concat(req.body.password);
 
     let doctorFound;
-    try{
-        doctorFound = await Doctor.findOne({email:email});
-    }catch(err){
+    try {
+        doctorFound = await Doctor.findOne({ email: email });
+        const token = jwt.sign({
+            email: newDoctor.email,
+            id: newDoctor._id
+        }, 'innoventX123');
+    } catch (err) {
         console.log(err);
-        return next(new HttpError('Something went wrong',500));
+        return next(new HttpError('Something went wrong', 500));
     }
 
-    if(!doctorFound){
-        return next(new HttpError('Doctor not found.Please signup!',500));
-    }else{
-        const auth = await bcrypt.compare(password , doctorFound.password);
-        if(!auth){
-            return next(new HttpError('Incorrect password!',500));
+    if (!doctorFound) {
+        return next(new HttpError('Doctor not found.Please signup!', 500));
+    } else {
+        const auth = await bcrypt.compare(password, doctorFound.password);
+        if (!auth) {
+            return next(new HttpError('Incorrect password!', 500));
         }
     }
 
-    res.json({doctor:doctorFound.toObject({getters:true})});
+    res.json({ doctor: doctorFound.toObject({ getters: true }), token });
 }
 
-const loginWithToken = async (req,res,next) => {
+const loginWithToken = async(req, res, next) => {
     const token = req.body.token;
 
+    decodedToken = jwt.verify(token, 'innoventX123');
+
     let doctorFound;
-    try{
-        doctorFound = await Doctor.findOne({password:token}); 
-    }catch(err){
+    try {
+        doctorFound = await Doctor.findOne({ email: decodedToken.email });
+    } catch (err) {
         console.log(err);
-        return next(new HttpError('Something went wrong',500));
+        return next(new HttpError('Something went wrong', 500));
     }
 
-    if(!doctorFound){
-        return next(new HttpError('Token not matched.Redirect to login page!',500));
+    if (!doctorFound) {
+        return next(new HttpError('Token not matched.Redirect to login page!', 500));
     }
 
-    res.json({doctor:doctorFound.toObject({getters:true})});
+    res.json({ doctor: doctorFound.toObject({ getters: true }) });
 }
 
-const updateAccessKey = async (req,res,next) => {
+const updateAccessKey = async(req, res, next) => {
     const doctorId = req.body.doctorId;
     const accessKey = req.body.accessKey;
 
     let doctorFound;
-    try{
+    try {
         doctorFound = await Doctor.findById(doctorId);
-    }catch(err){
+    } catch (err) {
         console.log(err);
-        return next(new HttpError('Something went wrong',500));
+        return next(new HttpError('Something went wrong', 500));
     }
 
-    if(!doctorFound){
-        return next(new HttpError('Doctor not found',500));
+    if (!doctorFound) {
+        return next(new HttpError('Doctor not found', 500));
     }
 
     doctorFound.accessKey = accessKey;
-    try{
+    try {
         await doctorFound.save();
-    }catch(err){
+    } catch (err) {
         console.log(err);
-        return next(new HttpError('Doctor not saved',500));
+        return next(new HttpError('Doctor not saved', 500));
     }
 
-    res.json({doctor:doctorFound.toObject({getters:true})})
+    res.json({ doctor: doctorFound.toObject({ getters: true }) })
 }
 
 exports.signup = signup;
