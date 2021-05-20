@@ -131,7 +131,29 @@ const updateAccessKey = async(req, res, next) => {
     res.json({ doctor: doctorFound.toObject({ getters: true }) })
 }
 
+const getPatients = async (req,res,next) => {
+    const doctorId = req.body.doctorId;
+
+    let doctorFound;
+    try{
+        doctorFound = await Doctor.findById(doctorId).populate('patientIds');
+    }catch(err){
+        console.log(err);
+        return next(new HttpError('Something went wrong', 500));
+    }
+
+    if(!doctorFound){
+        return next(new HttpError('Doctor not found', 500));
+    }
+
+    res.json({ 
+        patients:doctorFound.patientIds.map(pat => pat.toObject({ getters: true })), 
+        patientsInfo:doctorFound.patients.map(pat => pat.toObject({ getters: true }))
+    });
+}
+
 exports.signup = signup;
 exports.login = login;
 exports.updateAccessKey = updateAccessKey;
 exports.loginWithToken = loginWithToken;
+exports.getPatients = getPatients;

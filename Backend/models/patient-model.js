@@ -27,7 +27,7 @@ const patientSchema = new mongoose.Schema({
 
     previousDiseases:[{type:String}],
 
-    symptoms:[{type:String}],
+    symptoms:{type:String},
 
     reports:[{ type:mongoose.Types.ObjectId ,required:true, ref:'Report' }],
 
