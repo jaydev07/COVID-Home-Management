@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 
+const isAuth = require('../middlewares/is-auth');
+
 const patientControllers = require("../controllers/patient-controllers");
 
 router.get("/doctorsNearBy/:patientId", patientControllers.getDoctorsNearBy);
@@ -9,6 +11,10 @@ router.post("/signup", patientControllers.signup);
 
 router.post("/login", patientControllers.login);
 
-router.post("/consultDoctor/:patientId", patientControllers.consultDoctor);
+router.post("/token/login", patientControllers.loginWithToken);
+
+router.post("/consultDoctor/:patientId", isAuth, patientControllers.consultDoctor);
+
+router.post("/update/accesskey", isAuth, patientControllers.updateAccessKey);
 
 module.exports = router;
