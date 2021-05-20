@@ -132,7 +132,7 @@ const updateAccessKey = async(req, res, next) => {
 }
 
 const getPatients = async (req,res,next) => {
-    const doctorId = req.body.doctorId;
+    const doctorId = req.params.doctorId;
 
     let doctorFound;
     try{
