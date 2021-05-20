@@ -66,10 +66,13 @@ const login = async(req, res, next) => {
     let patientFound;
     try {
         patientFound = await Patient.findOne({ email: email });
+
+        // * created token for jwt
         const token = jwt.sign({
             email: newDoctor.email,
             id: newDoctor._id
         }, 'innoventX123');
+
     } catch (err) {
         console.log(err);
         return next(new HttpError('Something went wrong', 500));
