@@ -5,7 +5,7 @@ const isAuth = require('../middlewares/is-auth');
 
 const doctorControllers = require("../controllers/doctor-controllers");
 
-router.get("/patients/:doctorId",doctorControllers.getPatients);
+router.get("/patients/:doctorId", doctorControllers.getPatients);
 
 router.post("/signup", doctorControllers.signup);
 
