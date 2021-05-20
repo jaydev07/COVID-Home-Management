@@ -21,7 +21,6 @@ const doctorSchema = new mongoose.Schema({
     patientIds:[{ type:mongoose.Types.ObjectId ,required:true, ref:'Patient' }],
 
     patients:[{
-        name:{type:String },
         active:{type:Boolean },
         startDate:{type:String },
         endDate:{type:String }
