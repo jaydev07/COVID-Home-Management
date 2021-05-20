@@ -12,7 +12,6 @@ const signup = async(req, res, next) => {
 
     const email = req.body.email;
     let password = req.body.password;
-    password = email.concat(password);
 
     const salt = await bcrypt.genSalt();
     password = await bcrypt.hash(password, salt);
@@ -61,7 +60,6 @@ const signup = async(req, res, next) => {
 const login = async(req, res, next) => {
 
     const email = req.body.email;
-    const password = email.concat(req.body.password);
 
     let patientFound;
     try {
