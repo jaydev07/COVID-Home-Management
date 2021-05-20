@@ -59,12 +59,9 @@ const login = async(req, res, next) => {
     const email = req.body.email;
 
     let doctorFound;
+    let token;
     try {
         doctorFound = await Doctor.findOne({ email: email });
-        const token = jwt.sign({
-            email: newDoctor.email,
-            id: newDoctor._id
-        }, 'innoventX123');
     } catch (err) {
         console.log(err);
         return next(new HttpError('Something went wrong', 500));
@@ -77,6 +74,10 @@ const login = async(req, res, next) => {
         if (!auth) {
             return next(new HttpError('Incorrect password!', 500));
         }
+        token = jwt.sign({
+            email: doctorFound.email,
+            id: doctorFound._id
+        }, 'innoventX123');
     }
 
     res.json({ doctor: doctorFound.toObject({ getters: true }), token });
