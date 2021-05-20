@@ -9,6 +9,7 @@ const jwt = require('jsonwebtoken');
 
 const signup = async(req, res, next) => {
 
+    console.log(req.body);
     const email = req.body.email;
     let password = req.body.password;
     const salt = await bcrypt.genSalt();
@@ -30,7 +31,7 @@ const signup = async(req, res, next) => {
         name: req.body.name,
         email,
         password,
-        accessKey: null,
+        accessKey: req.body.accessKey,
         phoneNo: req.body.phoneNo,
         address: req.body.address,
         doctorLicense: req.body.doctorLicense,
@@ -56,8 +57,9 @@ const signup = async(req, res, next) => {
 
 const login = async(req, res, next) => {
 
-    const email = req.body.email;
-    const password = req.body.password;
+
+    console.log(req.body);
+    const {email,password,accesskey} = req.body;
 
     let doctorFound;
     let token;
@@ -71,6 +73,15 @@ const login = async(req, res, next) => {
     if (!doctorFound) {
         return next(new HttpError('Doctor not found.Please signup!', 500));
     } else {
+
+        doctorFound.accessKey = accesskey;
+        try{
+            await doctorFound.save();
+        }catch(err){
+            console.log(err);
+            return next(new HttpError('Something went wrong', 500));
+        }
+
         const auth = await bcrypt.compare(password, doctorFound.password);
         if (!auth) {
             return next(new HttpError('Incorrect password!', 500));
@@ -104,32 +115,6 @@ const loginWithToken = async(req, res, next) => {
     res.json({ doctor: doctorFound.toObject({ getters: true }) });
 }
 
-const updateAccessKey = async(req, res, next) => {
-    const doctorId = req.body.doctorId;
-    const accessKey = req.body.accessKey;
-
-    let doctorFound;
-    try {
-        doctorFound = await Doctor.findById(doctorId);
-    } catch (err) {
-        console.log(err);
-        return next(new HttpError('Something went wrong', 500));
-    }
-
-    if (!doctorFound) {
-        return next(new HttpError('Doctor not found', 500));
-    }
-
-    doctorFound.accessKey = accessKey;
-    try {
-        await doctorFound.save();
-    } catch (err) {
-        console.log(err);
-        return next(new HttpError('Doctor not saved', 500));
-    }
-
-    res.json({ doctor: doctorFound.toObject({ getters: true }) })
-}
 
 const getPatients = async (req,res,next) => {
     const doctorId = req.params.doctorId;
@@ -154,6 +139,5 @@ const getPatients = async (req,res,next) => {
 
 exports.signup = signup;
 exports.login = login;
-exports.updateAccessKey = updateAccessKey;
 exports.loginWithToken = loginWithToken;
 exports.getPatients = getPatients;

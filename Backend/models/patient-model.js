@@ -25,7 +25,7 @@ const patientSchema = new mongoose.Schema({
         endDate:{type:String }
     }],
 
-    previousDiseases:[{type:String}],
+    currentMedicines:[{type:String}],
 
     symptoms:{type:String},
 

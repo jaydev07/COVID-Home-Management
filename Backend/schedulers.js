@@ -40,7 +40,7 @@ cron.schedule("01 46 18 * * *", async () => {
                 await fetch('https://fcm.googleapis.com/fcm/send',{
                     "method": 'POST',
                     "headers":{
-                        "Authorization":"key=" + "AAAAKNaJUws:APA91bESAgv4OUtCkTjlc_uQi5q1sPlx0XfBhS7hosvJBbXj-nVVvkT5suq3p4sTernalIZYQiIpDPXKR_AR1fUNqDBRVCbghFEseU2c9xsUUuzCz4w4LjGwTnl-dDUaQcLkq0D3l1vd",
+                        "Authorization":"key=" + "AAAAMGzW3sY:APA91bFkpmHZumZxoN-Sm7BOPYsnACLvmFc_WiR6WrbTRrWp6BdwfYvVBU4jBnhpdx0oZ2vb7gYswVAcgJX8DberZVai5MiCYMz9MEIb0gpskPpFIqtdxsyybAWdbYtOfDjKTj4fARmy",
                         "Content-Type": "application/json"
                     },
                     "body":JSON.stringify(notification_body)
@@ -92,7 +92,7 @@ cron.schedule("01 00 10 * * *", async () => {
                 await fetch('https://fcm.googleapis.com/fcm/send',{
                     "method": 'POST',
                     "headers":{
-                        "Authorization":"key=" + "AAAAKNaJUws:APA91bESAgv4OUtCkTjlc_uQi5q1sPlx0XfBhS7hosvJBbXj-nVVvkT5suq3p4sTernalIZYQiIpDPXKR_AR1fUNqDBRVCbghFEseU2c9xsUUuzCz4w4LjGwTnl-dDUaQcLkq0D3l1vd",
+                        "Authorization":"key=" + "AAAAMGzW3sY:APA91bFkpmHZumZxoN-Sm7BOPYsnACLvmFc_WiR6WrbTRrWp6BdwfYvVBU4jBnhpdx0oZ2vb7gYswVAcgJX8DberZVai5MiCYMz9MEIb0gpskPpFIqtdxsyybAWdbYtOfDjKTj4fARmy",
                         "Content-Type": "application/json"
                     },
                     "body":JSON.stringify(notification_body)
@@ -144,7 +144,7 @@ cron.schedule("01 00 12 * * *", async () => {
                 await fetch('https://fcm.googleapis.com/fcm/send',{
                     "method": 'POST',
                     "headers":{
-                        "Authorization":"key=" + "AAAAKNaJUws:APA91bESAgv4OUtCkTjlc_uQi5q1sPlx0XfBhS7hosvJBbXj-nVVvkT5suq3p4sTernalIZYQiIpDPXKR_AR1fUNqDBRVCbghFEseU2c9xsUUuzCz4w4LjGwTnl-dDUaQcLkq0D3l1vd",
+                        "Authorization":"key=" + "AAAAMGzW3sY:APA91bFkpmHZumZxoN-Sm7BOPYsnACLvmFc_WiR6WrbTRrWp6BdwfYvVBU4jBnhpdx0oZ2vb7gYswVAcgJX8DberZVai5MiCYMz9MEIb0gpskPpFIqtdxsyybAWdbYtOfDjKTj4fARmy",
                         "Content-Type": "application/json"
                     },
                     "body":JSON.stringify(notification_body)
@@ -196,7 +196,7 @@ cron.schedule("01 00 13 * * *", async () => {
                 await fetch('https://fcm.googleapis.com/fcm/send',{
                     "method": 'POST',
                     "headers":{
-                        "Authorization":"key=" + "AAAAKNaJUws:APA91bESAgv4OUtCkTjlc_uQi5q1sPlx0XfBhS7hosvJBbXj-nVVvkT5suq3p4sTernalIZYQiIpDPXKR_AR1fUNqDBRVCbghFEseU2c9xsUUuzCz4w4LjGwTnl-dDUaQcLkq0D3l1vd",
+                        "Authorization":"key=" + "AAAAMGzW3sY:APA91bFkpmHZumZxoN-Sm7BOPYsnACLvmFc_WiR6WrbTRrWp6BdwfYvVBU4jBnhpdx0oZ2vb7gYswVAcgJX8DberZVai5MiCYMz9MEIb0gpskPpFIqtdxsyybAWdbYtOfDjKTj4fARmy",
                         "Content-Type": "application/json"
                     },
                     "body":JSON.stringify(notification_body)
@@ -248,7 +248,7 @@ cron.schedule("01 00 20 * * *", async () => {
                 await fetch('https://fcm.googleapis.com/fcm/send',{
                     "method": 'POST',
                     "headers":{
-                        "Authorization":"key=" + "AAAAKNaJUws:APA91bESAgv4OUtCkTjlc_uQi5q1sPlx0XfBhS7hosvJBbXj-nVVvkT5suq3p4sTernalIZYQiIpDPXKR_AR1fUNqDBRVCbghFEseU2c9xsUUuzCz4w4LjGwTnl-dDUaQcLkq0D3l1vd",
+                        "Authorization":"key=" + "AAAAMGzW3sY:APA91bFkpmHZumZxoN-Sm7BOPYsnACLvmFc_WiR6WrbTRrWp6BdwfYvVBU4jBnhpdx0oZ2vb7gYswVAcgJX8DberZVai5MiCYMz9MEIb0gpskPpFIqtdxsyybAWdbYtOfDjKTj4fARmy",
                         "Content-Type": "application/json"
                     },
                     "body":JSON.stringify(notification_body)
@@ -300,7 +300,7 @@ cron.schedule("01 00 21 * * *", async () => {
                 await fetch('https://fcm.googleapis.com/fcm/send',{
                     "method": 'POST',
                     "headers":{
-                        "Authorization":"key=" + "AAAAKNaJUws:APA91bESAgv4OUtCkTjlc_uQi5q1sPlx0XfBhS7hosvJBbXj-nVVvkT5suq3p4sTernalIZYQiIpDPXKR_AR1fUNqDBRVCbghFEseU2c9xsUUuzCz4w4LjGwTnl-dDUaQcLkq0D3l1vd",
+                        "Authorization":"key=" + "AAAAMGzW3sY:APA91bFkpmHZumZxoN-Sm7BOPYsnACLvmFc_WiR6WrbTRrWp6BdwfYvVBU4jBnhpdx0oZ2vb7gYswVAcgJX8DberZVai5MiCYMz9MEIb0gpskPpFIqtdxsyybAWdbYtOfDjKTj4fARmy",
                         "Content-Type": "application/json"
                     },
                     "body":JSON.stringify(notification_body)

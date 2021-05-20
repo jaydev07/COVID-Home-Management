@@ -13,6 +13,4 @@ router.post("/login", doctorControllers.login);
 
 router.post("/token/login", doctorControllers.loginWithToken);
 
-router.post("/update/accesskey", isAuth, doctorControllers.updateAccessKey);
-
 module.exports = router;
