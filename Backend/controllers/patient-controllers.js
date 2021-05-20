@@ -19,10 +19,6 @@ const signup = async(req, res, next) => {
     let patientFound;
     try {
         patientFound = await Patient.findOne({ email: email });
-        const token = jwt.sign({
-            email: newDoctor.email,
-            id: newDoctor._id
-        }, 'innoventX123');
     } catch (err) {
         console.log(err);
         return next(new HttpError('Something went wrong', 500));
@@ -47,8 +43,13 @@ const signup = async(req, res, next) => {
         prescribedMedicines: []
     });
 
+    let token;
     try {
         await newPatient.save();
+        token = jwt.sign({
+            email: newPatient.email,
+            id: newPatient._id
+        }, 'innoventX123');
     } catch (err) {
         console.log(err);
         return next(new HttpError('Something went wrong,Patient not saved', 500));
@@ -64,13 +65,6 @@ const login = async(req, res, next) => {
     let patientFound;
     try {
         patientFound = await Patient.findOne({ email: email });
-
-        // * created token for jwt
-        const token = jwt.sign({
-            email: newDoctor.email,
-            id: newDoctor._id
-        }, 'innoventX123');
-
     } catch (err) {
         console.log(err);
         return next(new HttpError('Something went wrong', 500));
@@ -84,6 +78,11 @@ const login = async(req, res, next) => {
             return next(new HttpError('Incorrect password!', 500));
         }
     }
+    // * created token for jwt
+    let token = jwt.sign({
+        email: patientFound.email,
+        id: patientFound._id
+    }, 'innoventX123');
 
     res.json({ patient: patientFound.toObject({ getters: true }), token });
 }
