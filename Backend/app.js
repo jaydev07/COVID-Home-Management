@@ -46,7 +46,13 @@ mongoose
         const io = require("./socket").init(server);
         io.on('connection',socket => {
             console.log('Client connected');
+        socket.on('connection_established',(data)=>{
+        	console.log(data)
+        	socket.emit('connection_established',{"message":"you are connected with server socket"});
         })
+
+        })
+
     })
     .catch((err) => {
         console.log(err);
