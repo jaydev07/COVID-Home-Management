@@ -38,7 +38,7 @@ const signup = async(req, res, next) => {
         doctorIds: [],
         doctors: [],
         previousDiseases: [],
-        symptoms: [],
+        symptoms: null,
         reports: [],
         prescribedMedicines: []
     });
@@ -61,6 +61,7 @@ const signup = async(req, res, next) => {
 const login = async(req, res, next) => {
 
     const email = req.body.email;
+    const password = req.body.password;
 
     let patientFound;
     try {
@@ -136,7 +137,7 @@ const updateAccessKey = async(req, res, next) => {
 
 const getDoctorsNearBy = async(req, res, next) => {
 
-    const patientId = req.params.patientId;
+    const patientId = req.body.patientId;
 
     let patientFound;
     try {
@@ -168,7 +169,7 @@ const getDoctorsNearBy = async(req, res, next) => {
 
 const consultDoctor = async(req, res, next) => {
 
-    const patientId = req.params.patientId;
+    const patientId = req.body.patientId;
     const doctorId = req.body.doctorId;
 
     let patientFound;
