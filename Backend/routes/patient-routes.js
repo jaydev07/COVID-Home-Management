@@ -13,8 +13,6 @@ router.post("/login", patientControllers.login);
 
 router.post("/token/login", patientControllers.loginWithToken);
 
-router.post("/consultDoctor", isAuth, patientControllers.consultDoctor);
-
-router.post("/update/accesskey", isAuth, patientControllers.updateAccessKey);
+router.post("/consultDoctor", patientControllers.consultDoctor);
 
 module.exports = router;

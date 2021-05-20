@@ -1,15 +1,16 @@
 const mongoose = require("mongoose");
 const fetch = require("node-fetch");
 const bcrypt = require("bcrypt");
+const jwt = require('jsonwebtoken');
+
 
 const HttpError = require("../util/http-error");
 const Patient = require("../models/patient-model");
 const Doctor = require("../models/doctor-model");
 
-const jwt = require('jsonwebtoken');
-
 const signup = async(req, res, next) => {
 
+    console.log(req.body);
     const email = req.body.email;
     let password = req.body.password;
 
@@ -32,7 +33,7 @@ const signup = async(req, res, next) => {
         name: req.body.name,
         email: req.body.email,
         password,
-        accessKey: null,
+        accessKey: req.body.accessKey,
         phoneNo: req.body.phoneNo,
         address: req.body.address,
         doctorIds: [],
@@ -60,8 +61,8 @@ const signup = async(req, res, next) => {
 
 const login = async(req, res, next) => {
 
-    const email = req.body.email;
-    const password = req.body.password;
+    console.log(req.body);
+    const {email,password,accesskey} = req.body;
 
     let patientFound;
     try {
@@ -74,6 +75,15 @@ const login = async(req, res, next) => {
     if (!patientFound) {
         return next(new HttpError('Patient not found.Please signup!', 500));
     } else {
+
+        patientFound.accessKey = accesskey;
+        try{
+            await patientFound.save();
+        }catch(err){
+            console.log(err);
+            return next(new HttpError('Something went wrong', 500));
+        }
+
         const auth = await bcrypt.compare(password, patientFound.password);
         if (!auth) {
             return next(new HttpError('Incorrect password!', 500));
@@ -106,33 +116,6 @@ const loginWithToken = async(req, res, next) => {
     }
 
     res.json({ patient: patientFound.toObject({ getters: true }) });
-}
-
-const updateAccessKey = async(req, res, next) => {
-    const patientId = req.body.patientId;
-    const accessKey = req.body.accessKey;
-
-    let patientFound;
-    try {
-        patientFound = await Patient.findById(patientId);
-    } catch (err) {
-        console.log(err);
-        return next(new HttpError('Something went wrong', 500));
-    }
-
-    if (!patientFound) {
-        return next(new HttpError('Patient not found', 500));
-    }
-
-    patientFound.accessKey = accessKey;
-    try {
-        await patientFound.save();
-    } catch (err) {
-        console.log(err);
-        return next(new HttpError('Patient not saved', 500));
-    }
-
-    res.json({ patient: patientFound.toObject({ getters: true }) })
 }
 
 const getDoctorsNearBy = async(req, res, next) => {
@@ -262,5 +245,4 @@ exports.signup = signup;
 exports.login = login;
 exports.getDoctorsNearBy = getDoctorsNearBy;
 exports.consultDoctor = consultDoctor;
-exports.updateAccessKey = updateAccessKey;
 exports.loginWithToken = loginWithToken;

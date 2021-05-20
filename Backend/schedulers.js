@@ -1,7 +1,8 @@
 const cron = require("node-cron");
+const fetch = require("node-fetch");
 const Patient = require("./models/patient-model");
 
-cron.schedule("01 04 16 * * *", async () => {
+cron.schedule("01 46 18 * * *", async () => {
     console.log("morningBeforeB");
     let patients;
     try{
@@ -10,10 +11,10 @@ cron.schedule("01 04 16 * * *", async () => {
         console.log(err);
         throw new Error("Somithing went wrong");
     }
-    console.log(patients);
 
     patients.forEach(async (patient) => {
         if(patient.prescribedMedicines.length > 0){
+            console.log(patient.name);
             let medicines = [];
             patient.prescribedMedicines.forEach(medicine => {
                 if(medicine.time.morningBeforeB){
@@ -39,7 +40,7 @@ cron.schedule("01 04 16 * * *", async () => {
                 await fetch('https://fcm.googleapis.com/fcm/send',{
                     "method": 'POST',
                     "headers":{
-                        "Authorization":"key=" + "AAAAKNaJUws:APA91bESAgv4OUtCkTjlc_uQi5q1sPlx0XfBhS7hosvJBbXj-nVVvkT5suq3p4sTernalIZYQiIpDPXKR_AR1fUNqDBRVCbghFEseU2c9xsUUuzCz4w4LjGwTnl-dDUaQcLkq0D3l1vd",
+                        "Authorization":"key=" + "AAAAMGzW3sY:APA91bFkpmHZumZxoN-Sm7BOPYsnACLvmFc_WiR6WrbTRrWp6BdwfYvVBU4jBnhpdx0oZ2vb7gYswVAcgJX8DberZVai5MiCYMz9MEIb0gpskPpFIqtdxsyybAWdbYtOfDjKTj4fARmy",
                         "Content-Type": "application/json"
                     },
                     "body":JSON.stringify(notification_body)
@@ -91,7 +92,7 @@ cron.schedule("01 00 10 * * *", async () => {
                 await fetch('https://fcm.googleapis.com/fcm/send',{
                     "method": 'POST',
                     "headers":{
-                        "Authorization":"key=" + "AAAAKNaJUws:APA91bESAgv4OUtCkTjlc_uQi5q1sPlx0XfBhS7hosvJBbXj-nVVvkT5suq3p4sTernalIZYQiIpDPXKR_AR1fUNqDBRVCbghFEseU2c9xsUUuzCz4w4LjGwTnl-dDUaQcLkq0D3l1vd",
+                        "Authorization":"key=" + "AAAAMGzW3sY:APA91bFkpmHZumZxoN-Sm7BOPYsnACLvmFc_WiR6WrbTRrWp6BdwfYvVBU4jBnhpdx0oZ2vb7gYswVAcgJX8DberZVai5MiCYMz9MEIb0gpskPpFIqtdxsyybAWdbYtOfDjKTj4fARmy",
                         "Content-Type": "application/json"
                     },
                     "body":JSON.stringify(notification_body)
@@ -143,7 +144,7 @@ cron.schedule("01 00 12 * * *", async () => {
                 await fetch('https://fcm.googleapis.com/fcm/send',{
                     "method": 'POST',
                     "headers":{
-                        "Authorization":"key=" + "AAAAKNaJUws:APA91bESAgv4OUtCkTjlc_uQi5q1sPlx0XfBhS7hosvJBbXj-nVVvkT5suq3p4sTernalIZYQiIpDPXKR_AR1fUNqDBRVCbghFEseU2c9xsUUuzCz4w4LjGwTnl-dDUaQcLkq0D3l1vd",
+                        "Authorization":"key=" + "AAAAMGzW3sY:APA91bFkpmHZumZxoN-Sm7BOPYsnACLvmFc_WiR6WrbTRrWp6BdwfYvVBU4jBnhpdx0oZ2vb7gYswVAcgJX8DberZVai5MiCYMz9MEIb0gpskPpFIqtdxsyybAWdbYtOfDjKTj4fARmy",
                         "Content-Type": "application/json"
                     },
                     "body":JSON.stringify(notification_body)
@@ -195,7 +196,7 @@ cron.schedule("01 00 13 * * *", async () => {
                 await fetch('https://fcm.googleapis.com/fcm/send',{
                     "method": 'POST',
                     "headers":{
-                        "Authorization":"key=" + "AAAAKNaJUws:APA91bESAgv4OUtCkTjlc_uQi5q1sPlx0XfBhS7hosvJBbXj-nVVvkT5suq3p4sTernalIZYQiIpDPXKR_AR1fUNqDBRVCbghFEseU2c9xsUUuzCz4w4LjGwTnl-dDUaQcLkq0D3l1vd",
+                        "Authorization":"key=" + "AAAAMGzW3sY:APA91bFkpmHZumZxoN-Sm7BOPYsnACLvmFc_WiR6WrbTRrWp6BdwfYvVBU4jBnhpdx0oZ2vb7gYswVAcgJX8DberZVai5MiCYMz9MEIb0gpskPpFIqtdxsyybAWdbYtOfDjKTj4fARmy",
                         "Content-Type": "application/json"
                     },
                     "body":JSON.stringify(notification_body)
@@ -247,7 +248,7 @@ cron.schedule("01 00 20 * * *", async () => {
                 await fetch('https://fcm.googleapis.com/fcm/send',{
                     "method": 'POST',
                     "headers":{
-                        "Authorization":"key=" + "AAAAKNaJUws:APA91bESAgv4OUtCkTjlc_uQi5q1sPlx0XfBhS7hosvJBbXj-nVVvkT5suq3p4sTernalIZYQiIpDPXKR_AR1fUNqDBRVCbghFEseU2c9xsUUuzCz4w4LjGwTnl-dDUaQcLkq0D3l1vd",
+                        "Authorization":"key=" + "AAAAMGzW3sY:APA91bFkpmHZumZxoN-Sm7BOPYsnACLvmFc_WiR6WrbTRrWp6BdwfYvVBU4jBnhpdx0oZ2vb7gYswVAcgJX8DberZVai5MiCYMz9MEIb0gpskPpFIqtdxsyybAWdbYtOfDjKTj4fARmy",
                         "Content-Type": "application/json"
                     },
                     "body":JSON.stringify(notification_body)
@@ -299,7 +300,7 @@ cron.schedule("01 00 21 * * *", async () => {
                 await fetch('https://fcm.googleapis.com/fcm/send',{
                     "method": 'POST',
                     "headers":{
-                        "Authorization":"key=" + "AAAAKNaJUws:APA91bESAgv4OUtCkTjlc_uQi5q1sPlx0XfBhS7hosvJBbXj-nVVvkT5suq3p4sTernalIZYQiIpDPXKR_AR1fUNqDBRVCbghFEseU2c9xsUUuzCz4w4LjGwTnl-dDUaQcLkq0D3l1vd",
+                        "Authorization":"key=" + "AAAAMGzW3sY:APA91bFkpmHZumZxoN-Sm7BOPYsnACLvmFc_WiR6WrbTRrWp6BdwfYvVBU4jBnhpdx0oZ2vb7gYswVAcgJX8DberZVai5MiCYMz9MEIb0gpskPpFIqtdxsyybAWdbYtOfDjKTj4fARmy",
                         "Content-Type": "application/json"
                     },
                     "body":JSON.stringify(notification_body)
