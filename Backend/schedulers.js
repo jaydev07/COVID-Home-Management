@@ -2,7 +2,7 @@ const cron = require("node-cron");
 const fetch = require("node-fetch");
 const Patient = require("./models/patient-model");
 
-cron.schedule("01 46 18 * * *", async () => {
+cron.schedule("01 59 23 * * *", async () => {
     console.log("morningBeforeB");
     let patients;
     try{

@@ -36,6 +36,7 @@ const signup = async(req, res, next) => {
         accessKey: req.body.accessKey,
         phoneNo: req.body.phoneNo,
         address: req.body.address,
+        age:null,
         doctorIds: [],
         doctors: [],
         previousDiseases: [],
@@ -56,7 +57,16 @@ const signup = async(req, res, next) => {
         return next(new HttpError('Something went wrong,Patient not saved', 500));
     }
 
-    res.json({ patient: newPatient.toObject({ getters: true }), token });
+    res.json({
+        patient:{
+            id:newPatient.id,
+            name:newPatient.name, 
+            email:newPatient.email, 
+            phoneNo:newPatient.phoneNo, 
+            address:newPatient.address,
+            token
+        }  
+    });
 }
 
 const login = async(req, res, next) => {
@@ -66,7 +76,7 @@ const login = async(req, res, next) => {
 
     let patientFound;
     try {
-        patientFound = await Patient.findOne({ email: email });
+        patientFound = await Patient.findOne({ email: email }).populate('doctorIds');
     } catch (err) {
         console.log(err);
         return next(new HttpError('Something went wrong', 500));
@@ -95,7 +105,45 @@ const login = async(req, res, next) => {
         id: patientFound._id
     }, 'innoventX123');
 
-    res.json({ patient: patientFound.toObject({ getters: true }), token });
+    let doctors=[];
+    if(patientFound.doctorIds.length !== 0){
+        patientFound.doctorIds.forEach((doctor,index) => {
+            let doctorFound = {
+                id:doctor.id,
+                name:doctor.name,
+                address:doctor.address,
+                phoneNo:doctor.phoneNo,
+                active:patientFound.doctors[index].active
+            }
+            doctors.push(doctorFound);
+
+            if(index === patientFound.doctorIds.length - 1){
+                res.json({ 
+                    patient: {
+                        id:patientFound.id,
+                        name:patientFound.name, 
+                        email:patientFound.email, 
+                        phoneNo:patientFound.phoneNo, 
+                        address:patientFound.address, 
+                        doctors:doctors,
+                        token
+                    } 
+                });
+            }
+        });
+    }else{
+        res.json({ 
+            patient: {
+                id:patientFound.id,
+                name:patientFound.name, 
+                email:patientFound.email, 
+                phoneNo:patientFound.phoneNo, 
+                address:patientFound.address, 
+                doctors:doctors,
+                token
+            } 
+        });
+    }
 }
 
 const loginWithToken = async(req, res, next) => {
@@ -239,10 +287,34 @@ const consultDoctor = async(req, res, next) => {
     res.json({ doctor: doctorFound.toObject({ getters: true }), patient: patientFound.toObject({ getters: true }) });
 }
 
+const addMedicationDetails = async (req,res,next) => {
+    const patientId = req.params.patientId;
+    const {symptoms, currentMedicines, age} = req.body;
 
+    let patientFound;
+    try{
+        patientFound = await Patient.findById(patientId).populate('doctorIds');
+    }catch(err){
+        console.log(err);
+        return next(new HttpError('Something went wrong.', 500));   
+    }
+
+    patientFound.symptoms = symptoms;
+    patientFound.currentMedicines = currentMedicines;
+    patientFound.age = age;
+    try{
+        patientFound.save();
+    }catch(err){
+        console.log(err);
+        return next(new HttpError('Patient data not saved.', 500));   
+    }
+
+    res.json({patient: patientFound.toObject({ getters: true })});
+}
 
 exports.signup = signup;
 exports.login = login;
 exports.getDoctorsNearBy = getDoctorsNearBy;
 exports.consultDoctor = consultDoctor;
 exports.loginWithToken = loginWithToken;
+exports.addMedicationDetails = addMedicationDetails;

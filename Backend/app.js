@@ -7,6 +7,7 @@ const HttpError = require("./util/http-error");
 const patientRoutes = require("./routes/patient-routes");
 const doctorRoutes = require("./routes/doctor-routes");
 const medicineRoutes = require("./routes/medicine-routes");
+const reportRoutes = require("./routes/report-routes");
 
 app.use(bodyParser.json());
 
@@ -23,6 +24,7 @@ app.use((req,res,next) => {
 app.use("/api/patient",patientRoutes);
 app.use("/api/doctor", doctorRoutes);
 app.use("/api/medicine",medicineRoutes);
+app.use("/api/report",reportRoutes)
 
 app.use((req,res,next) => {
     const error = new HttpError('Could not find the route!',404);

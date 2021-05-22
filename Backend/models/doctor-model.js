@@ -18,6 +18,8 @@ const doctorSchema = new mongoose.Schema({
 
     doctorLicense:{type:String , required:true},
 
+    designation:{type:String , required:true},
+
     patientIds:[{ type:mongoose.Types.ObjectId ,required:true, ref:'Patient' }],
 
     patients:[{

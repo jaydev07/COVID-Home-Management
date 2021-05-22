@@ -3,40 +3,48 @@ const mongoose = require("mongoose");
 const uniqueValidator = require('mongoose-unique-validator');
 
 const reportSchema = new mongoose.Schema({
-    
-    date:{type:String , required:true, unique:true},
 
-    patientId:{ type:mongoose.Types.ObjectId ,required:true, ref:'Patient' },
+    dateId:{type:String , required:true , unique:true},
+    
+    patientId:{ type:String , required:true },
 
     patientName:{type:String , required:true },
 
-    doctorId:{ type:mongoose.Types.ObjectId ,required:true, ref:'Doctor' },
+    doctorId:{ type:String , required:true },
 
     doctorName:{ type:String , required:true },
 
-    morning:[{
-        medicineName:{type:String},
-        quantity:{type:Number}
-    }],
+    date:{type:String , required:true},
 
-    afternoon:[{
-        medicineName:{type:String},
-        quantity:{type:Number}
-    }],
 
-    evening:[{
-        medicineName:{type:String},
-        quantity:{type:Number}
-    }],
+    // morning:[{
+    //     medicineName:{type:String},
+    //     quantity:{type:Number}
+    // }],
 
-    oxygenLevel:[{
+    // afternoon:[{
+    //     medicineName:{type:String},
+    //     quantity:{type:Number}
+    // }],
+
+    // evening:[{
+    //     medicineName:{type:String},
+    //     quantity:{type:Number}
+    // }],
+
+    oxygen:[{
         level:{type:Number},
-        time:{type:String}
+        time:{type:Number}
     }],
 
-    pulseLevel:[{
+    pulse:[{
         level:{type:Number},
-        time:{type:String}
+        time:{type:Number}
+    }],
+
+    temperature: [{
+        level:{type:Number},
+        time:{type:Number}
     }]
 
 });
