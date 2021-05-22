@@ -7,6 +7,8 @@ const patientControllers = require("../controllers/patient-controllers");
 
 router.get("/doctorsNearBy",  patientControllers.getDoctorsNearBy);
 
+router.get("/info/:patientId", patientControllers.getPatientData);
+
 router.get("/daily/:patientId", patientControllers.patientDailyRender);
 
 router.post("/signup", patientControllers.signup);

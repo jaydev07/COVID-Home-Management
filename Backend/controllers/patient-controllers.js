@@ -396,6 +396,24 @@ const addMedicationDetails = async (req,res,next) => {
     res.json({patient: patientFound.toObject({ getters: true })});
 }
 
+const getPatientData = async (req,res,next) => {
+
+    const patientId = req.params.patientId;
+
+    let patientFound;
+    try{
+        patientFound = await Patient.findById(patientId).populate('reports').populate("prescribedMedicines");
+    }catch(err){
+        console.log(err);
+        return next(new HttpError('Something went wrong.', 500));
+    }
+    if(!patientFound){
+        return next(new HttpError('Patient not found', 500));
+    }
+
+    res.json({ patient:patientFound.toObject({ getters: true})});
+}
+
 exports.signup = signup;
 exports.login = login;
 exports.getDoctorsNearBy = getDoctorsNearBy;
@@ -403,3 +421,4 @@ exports.consultDoctor = consultDoctor;
 exports.loginWithToken = loginWithToken;
 exports.addMedicationDetails = addMedicationDetails;
 exports.patientDailyRender = patientDailyRender;
+exports.getPatientData = getPatientData;
