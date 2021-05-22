@@ -35,6 +35,7 @@ const signup = async(req, res, next) => {
         phoneNo: req.body.phoneNo,
         address: req.body.address,
         doctorLicense: req.body.doctorLicense,
+        designation: req.body.designation,
         patientIds: [],
         patients: []
     });

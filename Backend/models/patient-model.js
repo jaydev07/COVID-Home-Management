@@ -16,6 +16,8 @@ const patientSchema = new mongoose.Schema({
 
     address:{ type:String , required:true },
 
+    age:{ type:Number },
+
     doctorIds:[{ type:mongoose.Types.ObjectId ,required:true, ref:'Doctor' }],
 
     doctors:[{
@@ -25,7 +27,10 @@ const patientSchema = new mongoose.Schema({
         endDate:{type:String }
     }],
 
-    currentMedicines:[{type:String}],
+    currentMedicines:[{
+        medicine:{type:String},
+        startDate:{type:String }
+    }],
 
     symptoms:{type:String},
 
