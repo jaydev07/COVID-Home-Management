@@ -128,14 +128,50 @@ const getPatients = async (req,res,next) => {
         console.log(err);
         return next(new HttpError('Something went wrong', 500));
     }
-
     if(!doctorFound){
         return next(new HttpError('Doctor not found', 500));
     }
 
-    res.json({ 
-        patients:doctorFound.patientIds.map(pat => pat.toObject({ getters: true })), 
-        patientsInfo:doctorFound.patients.map(pat => pat.toObject({ getters: true }))
+    let patients=[];
+    doctorFound.patientIds.forEach(async (patient,index) => {
+        if(doctorFound.patients[index].active){
+            let patientReports;
+            try{
+                patientReports = await Patient.findById(patient.id).populate('reports').populate('prescribedMedicines');
+            }catch(err){
+                console.log(err);
+                return next(new HttpError('Something went wrong', 500));
+            }
+
+            let insertPatient = {
+                id:patient.id,
+                name:patient.name,
+                email:patient.email,
+                phoneNo:patient.phoneNo,
+                address:patient.address,
+                age:patient.age,
+                currentMedicines:patient.currentMedicines,
+                symptoms:patient.symptoms,
+                reports:patientReports.reports,
+                prescribedMedicines:patientReports.prescribedMedicines,
+                startDate:doctorFound.patients[index].startDate
+            }
+            patients.push(insertPatient);
+        }
+        else{
+            let insertPatient = {
+                id:patient.id,
+                name:patient.name,
+                email:patient.email,
+                phoneNo:patient.phoneNo,
+                address:patient.address,
+                startDate:doctorFound.patients[index].startDate
+            }
+            patients.push(insertPatient);
+        }
+        if(index === doctorFound.patientIds.length - 1){
+            res.json({patients});
+        }
     });
 }
 
