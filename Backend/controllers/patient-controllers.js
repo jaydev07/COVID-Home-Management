@@ -3,10 +3,94 @@ const fetch = require("node-fetch");
 const bcrypt = require("bcrypt");
 const jwt = require('jsonwebtoken');
 
-
 const HttpError = require("../util/http-error");
 const Patient = require("../models/patient-model");
 const Doctor = require("../models/doctor-model");
+const Report = require("../models/report-model");
+
+//////////////////////////////////////////////////////////// GET /////////////////////////////////////////////////////////////////////////
+
+const getDoctorsNearBy = async(req, res, next) => {
+
+    const patientId = req.body.patientId;
+
+    let patientFound;
+    try {
+        patientFound = await Patient.findById(patientId);
+    } catch (err) {
+        console.log(err);
+        return next(new HttpError('Something went wrong', 500));
+    }
+
+    if (!patientFound) {
+        return next(new HttpError('Patient not found', 500));
+    }
+
+    let patientCity = patientFound.address;
+    let doctorsNearBy;
+    try {
+        doctorsNearBy = await Doctor.find({ address: patientCity });
+    } catch (err) {
+        console.log(err);
+        return next(new HttpError('Something went wrong', 500));
+    }
+
+    if (doctorsNearBy.length === 0) {
+        doctorsNearBy = await Doctor.find();
+    }
+
+    res.json({ doctors: doctorsNearBy.map(doc => doc.toObject({ getters: true })) });
+}
+
+const patientDailyRender = async (req,res,next) => {
+
+    const patientId = req.params.patientId;
+
+    let patientFound;
+    try{
+        patientFound = await Patient.findById(patientId);
+    }catch(err){
+        console.log(err);
+        return next(new HttpError('Something went wrong', 500));
+    }
+    if(!patientFound){
+        return next(new HttpError('Patient not found', 500));
+    }
+
+    const date = new Date().toJSON().slice(0,10);
+    let todayReport;
+    try{
+        todayReport = await Report.findOne({date:date , patientId:patientFound.id});
+    }catch(err){
+        console.log(err);
+        return next(new HttpError('Something went wrong', 500));
+    }
+
+    let oxygen,pulse,temperature;
+    if(todayReport){
+        oxygen=todayReport.oxygen;
+        pulse=todayReport.pulse;
+        temperature = todayReport.temperature;
+    }else{
+        oxygen=[];
+        pulse=[];
+        temperature = [];
+    }
+
+    res.json({
+        info:{
+            symptoms:patientFound.symptoms,
+            prescribedMedicines:patientFound.prescribedMedicines,
+            date:todayReport.date,
+            oxygen,
+            pulse,
+            temperature
+        }
+    });
+
+}
+
+////////////////////////////////////////////////////////////// POST ///////////////////////////////////////////////////////////////////////
 
 const signup = async(req, res, next) => {
 
@@ -166,38 +250,6 @@ const loginWithToken = async(req, res, next) => {
     res.json({ patient: patientFound.toObject({ getters: true }) });
 }
 
-const getDoctorsNearBy = async(req, res, next) => {
-
-    const patientId = req.body.patientId;
-
-    let patientFound;
-    try {
-        patientFound = await Patient.findById(patientId);
-    } catch (err) {
-        console.log(err);
-        return next(new HttpError('Something went wrong', 500));
-    }
-
-    if (!patientFound) {
-        return next(new HttpError('Patient not found', 500));
-    }
-
-    let patientCity = patientFound.address;
-    let doctorsNearBy;
-    try {
-        doctorsNearBy = await Doctor.find({ address: patientCity });
-    } catch (err) {
-        console.log(err);
-        return next(new HttpError('Something went wrong', 500));
-    }
-
-    if (doctorsNearBy.length === 0) {
-        doctorsNearBy = await Doctor.find();
-    }
-
-    res.json({ doctors: doctorsNearBy.map(doc => doc.toObject({ getters: true })) });
-}
-
 const consultDoctor = async(req, res, next) => {
 
     const patientId = req.body.patientId;
@@ -318,3 +370,4 @@ exports.getDoctorsNearBy = getDoctorsNearBy;
 exports.consultDoctor = consultDoctor;
 exports.loginWithToken = loginWithToken;
 exports.addMedicationDetails = addMedicationDetails;
+exports.patientDailyRender = patientDailyRender;
