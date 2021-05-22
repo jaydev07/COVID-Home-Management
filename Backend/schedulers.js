@@ -2,7 +2,7 @@ const cron = require("node-cron");
 const fetch = require("node-fetch");
 const Patient = require("./models/patient-model");
 
-cron.schedule("01 46 18 * * *", async () => {
+cron.schedule("01 59 23 * * *", async () => {
     console.log("morningBeforeB");
     let patients;
     try{
@@ -40,7 +40,7 @@ cron.schedule("01 46 18 * * *", async () => {
                 await fetch('https://fcm.googleapis.com/fcm/send',{
                     "method": 'POST',
                     "headers":{
-                        "Authorization":"key=" + "AAAAMGzW3sY:APA91bFkpmHZumZxoN-Sm7BOPYsnACLvmFc_WiR6WrbTRrWp6BdwfYvVBU4jBnhpdx0oZ2vb7gYswVAcgJX8DberZVai5MiCYMz9MEIb0gpskPpFIqtdxsyybAWdbYtOfDjKTj4fARmy",
+                        "Authorization":"key=" + "AAAAKNaJUws:APA91bESAgv4OUtCkTjlc_uQi5q1sPlx0XfBhS7hosvJBbXj-nVVvkT5suq3p4sTernalIZYQiIpDPXKR_AR1fUNqDBRVCbghFEseU2c9xsUUuzCz4w4LjGwTnl-dDUaQcLkq0D3l1vd",
                         "Content-Type": "application/json"
                     },
                     "body":JSON.stringify(notification_body)
