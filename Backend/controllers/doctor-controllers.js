@@ -3,8 +3,9 @@ const fetch = require("node-fetch");
 const bcrypt = require("bcrypt");
 
 const HttpError = require("../util/http-error");
+const Patient = require("../models/patient-model");
 const Doctor = require("../models/doctor-model");
-
+const Report = require("../models/report-model");
 const jwt = require('jsonwebtoken');
 
 const signup = async(req, res, next) => {

@@ -189,6 +189,26 @@ const login = async(req, res, next) => {
         id: patientFound._id
     }, 'innoventX123');
 
+    const date = new Date().toJSON().slice(0,10);
+    let todayReport;
+    try{
+        todayReport = await Report.findOne({date:date , patientId:patientFound.id});
+    }catch(err){
+        console.log(err);
+        return next(new HttpError('Something went wrong', 500));
+    }
+
+    let oxygen,pulse,temperature;
+    if(todayReport){
+        oxygen=todayReport.oxygen;
+        pulse=todayReport.pulse;
+        temperature = todayReport.temperature;
+    }else{
+        oxygen=[];
+        pulse=[];
+        temperature = [];
+    }
+
     let doctors=[];
     if(patientFound.doctorIds.length !== 0){
         patientFound.doctorIds.forEach((doctor,index) => {
@@ -210,7 +230,13 @@ const login = async(req, res, next) => {
                         phoneNo:patientFound.phoneNo, 
                         address:patientFound.address, 
                         doctors:doctors,
-                        token
+                        token,
+                        symptoms:patientFound.symptoms,
+                        prescribedMedicines:patientFound.prescribedMedicines,
+                        date:todayReport.date,
+                        oxygen,
+                        pulse,
+                        temperature
                     } 
                 });
             }
@@ -224,7 +250,13 @@ const login = async(req, res, next) => {
                 phoneNo:patientFound.phoneNo, 
                 address:patientFound.address, 
                 doctors:doctors,
-                token
+                token,
+                symptoms:patientFound.symptoms,
+                prescribedMedicines:patientFound.prescribedMedicines,
+                date:todayReport.date,
+                oxygen,
+                pulse,
+                temperature
             } 
         });
     }
