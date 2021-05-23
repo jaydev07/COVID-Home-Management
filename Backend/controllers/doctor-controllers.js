@@ -8,119 +8,9 @@ const Doctor = require("../models/doctor-model");
 const Report = require("../models/report-model");
 const jwt = require('jsonwebtoken');
 
-const signup = async(req, res, next) => {
+//////////////////////////////////////////////////////////// GET requests /////////////////////////////////////////////////////////////
 
-    console.log(req.body);
-    const email = req.body.email;
-    let password = req.body.password;
-    const salt = await bcrypt.genSalt();
-    password = await bcrypt.hash(password, salt);
-
-    let doctorFound;
-    try {
-        doctorFound = await Doctor.findOne({ email: email });
-    } catch (err) {
-        console.log(err);
-        return next(new HttpError('Something went wrong', 500));
-    }
-
-    if (doctorFound) {
-        return next(new HttpError('Doctor already exists.Please login', 500));
-    }
-
-    const newDoctor = new Doctor({
-        name: req.body.name,
-        email,
-        password,
-        accessKey: req.body.accessKey,
-        phoneNo: req.body.phoneNo,
-        address: req.body.address,
-        doctorLicense: req.body.doctorLicense,
-        designation: req.body.designation,
-        patientIds: [],
-        patients: []
-    });
-
-    let token;
-
-    try {
-        await newDoctor.save();
-        token = jwt.sign({
-            email: newDoctor.email,
-            id: newDoctor._id
-        }, 'innoventX123');
-    } catch (err) {
-        console.log(err);
-        return next(new HttpError('Something went wrong,Doctor not saved', 500));
-    }
-
-    res.json({ doctor: newDoctor.toObject({ getters: true }), token });
-}
-
-const login = async(req, res, next) => {
-
-
-    console.log(req.body);
-    const {email,password,accesskey} = req.body;
-
-    let doctorFound;
-    let token;
-    try {
-        doctorFound = await Doctor.findOne({ email: email });
-    } catch (err) {
-        console.log(err);
-        return next(new HttpError('Something went wrong', 500));
-    }
-
-    if (!doctorFound) {
-        return next(new HttpError('Doctor not found.Please signup!', 500));
-    } else {
-
-        doctorFound.accessKey = accesskey;
-        try{
-            await doctorFound.save();
-        }catch(err){
-            console.log(err);
-            return next(new HttpError('Something went wrong', 500));
-        }
-
-        const auth = await bcrypt.compare(password, doctorFound.password);
-        if (!auth) {
-            return next(new HttpError('Incorrect password!', 500));
-        }
-        token = jwt.sign({
-            email: doctorFound.email,
-            id: doctorFound._id
-        }, 'innoventX123');
-    }
-
-    res.json({ doctor: doctorFound.toObject({ getters: true }), token });
-}
-
-const loginWithToken = async(req, res, next) => {
-    const token = req.body.token;
-
-    decodedToken = jwt.verify(token, 'innoventX123');
-
-    let doctorFound;
-    try {
-        doctorFound = await Doctor.findOne({ email: decodedToken.email });
-    } catch (err) {
-        console.log(err);
-        return next(new HttpError('Something went wrong', 500));
-    }
-
-    if (!doctorFound) {
-        return next(new HttpError('Token not matched.Redirect to login page!', 500));
-    }
-
-    res.json({ doctor: doctorFound.toObject({ getters: true }) });
-}
-
-const pushDataInPatients = (patients, insertPatient) => {
-
-}
-
+// To get the whole list of patients of a perticular doctor
 const getPatients = async (req,res,next) => {
     const doctorId = req.params.doctorId;
 
@@ -179,6 +69,7 @@ const getPatients = async (req,res,next) => {
     }
 }
 
+// To get the list of panding or non-consulted patients of a perticular doctor
 const getNonConsultedPatients = async (req,res,next) => {
     
     const doctorId = req.params.doctorId;
@@ -210,6 +101,122 @@ const getNonConsultedPatients = async (req,res,next) => {
     res.json({patients});
 }
 
+////////////////////////////////////////////////////////// POST Requests ////////////////////////////////////////////////////////////////
+
+// To signup a doctor
+const signup = async(req, res, next) => {
+
+    console.log(req.body);
+    const email = req.body.email;
+    let password = req.body.password;
+    const salt = await bcrypt.genSalt();
+    password = await bcrypt.hash(password, salt);
+
+    let doctorFound;
+    try {
+        doctorFound = await Doctor.findOne({ email: email });
+    } catch (err) {
+        console.log(err);
+        return next(new HttpError('Something went wrong', 500));
+    }
+
+    if (doctorFound) {
+        return next(new HttpError('Doctor already exists.Please login', 500));
+    }
+
+    const newDoctor = new Doctor({
+        name: req.body.name,
+        email,
+        password,
+        accessKey: req.body.accessKey,
+        phoneNo: req.body.phoneNo,
+        address: req.body.address,
+        doctorLicense: req.body.doctorLicense,
+        designation: req.body.designation,
+        patientIds: [],
+        patients: []
+    });
+
+    let token;
+
+    try {
+        await newDoctor.save();
+        token = jwt.sign({
+            email: newDoctor.email,
+            id: newDoctor._id
+        }, 'innoventX123');
+    } catch (err) {
+        console.log(err);
+        return next(new HttpError('Something went wrong,Doctor not saved', 500));
+    }
+
+    res.json({ doctor: newDoctor.toObject({ getters: true }), token });
+}
+
+// To login a doctor
+const login = async(req, res, next) => {
+
+    console.log(req.body);
+    const {email,password,accesskey} = req.body;
+
+    let doctorFound;
+    let token;
+    try {
+        doctorFound = await Doctor.findOne({ email: email });
+    } catch (err) {
+        console.log(err);
+        return next(new HttpError('Something went wrong', 500));
+    }
+
+    if (!doctorFound) {
+        return next(new HttpError('Doctor not found.Please signup!', 500));
+    } else {
+
+        doctorFound.accessKey = accesskey;
+        try{
+            await doctorFound.save();
+        }catch(err){
+            console.log(err);
+            return next(new HttpError('Something went wrong', 500));
+        }
+
+        const auth = await bcrypt.compare(password, doctorFound.password);
+        if (!auth) {
+            return next(new HttpError('Incorrect password!', 500));
+        }
+        token = jwt.sign({
+            email: doctorFound.email,
+            id: doctorFound._id
+        }, 'innoventX123');
+    }
+
+    res.json({ doctor: doctorFound.toObject({ getters: true }), token });
+}
+
+// To login with a token which is stored in the memory of user's phone
+const loginWithToken = async(req, res, next) => {
+    const token = req.body.token;
+
+    decodedToken = jwt.verify(token, 'innoventX123');
+
+    let doctorFound;
+    try {
+        doctorFound = await Doctor.findOne({ email: decodedToken.email });
+    } catch (err) {
+        console.log(err);
+        return next(new HttpError('Something went wrong', 500));
+    }
+
+    if (!doctorFound) {
+        return next(new HttpError('Token not matched.Redirect to login page!', 500));
+    }
+
+    res.json({ doctor: doctorFound.toObject({ getters: true }) });
+}
+
+/////////////////////////////////////////////////////// PATCH Requets ////////////////////////////////////////////////////////////////////
+
+// To confirm a perticular patient & consult him.
 const confirmPatient = async (req,res,next) => {
     const doctorId = req.params.doctorId;
     const patientId = req.body.patientId;
@@ -248,6 +255,7 @@ const confirmPatient = async (req,res,next) => {
         startDate:today,
         endDate:null
     });
+    patientFound.prescribedMedicines = [];
 
     try{
         const sess = await mongoose.startSession();
@@ -294,6 +302,7 @@ const confirmPatient = async (req,res,next) => {
     res.json({ doctor: doctorFound.toObject({ getters: true }), patient: patientFound.toObject({ getters: true }) });
 }
 
+// To reject the patient's consulting request
 const rejectPatient = async ( req,res,next) => {
     const doctorId = req.params.doctorId;
     const patientId = req.body.patientId;
@@ -348,6 +357,7 @@ const rejectPatient = async ( req,res,next) => {
     res.json({doctor: doctorFound.toObject({ getters: true })});
 }
 
+// After the whole medication of a patient is completed
 const medicationEnded = async ( req,res,next) => {
     const doctorId = req.params.doctorId;
     const patientId = req.body.patientId;

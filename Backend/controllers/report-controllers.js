@@ -9,6 +9,9 @@ const Doctor = require("../models/doctor-model");
 const Medicine = require("../models/medicine-model");
 const Report = require("../models/report-model");
 
+/////////////////////////////////////////////////////////////////// GET Requests //////////////////////////////////////////////////////
+
+// To get a patient's report of a perticular day
 const getReportByDate = async (req,res,next) => {
 
     const patientId = req.params.patientId;
@@ -35,6 +38,9 @@ const getReportByDate = async (req,res,next) => {
     });
 }
 
+////////////////////////////////////////////////////////////////// POST Requests ///////////////////////////////////////////////////////
+
+// To add the patient's level into the report
 const addReport = async (req,res,next) => {
     const patientId = req.params.patientId;
     const {oxygenLevel ,pulseLevel, temperatureLevel} = req.body;

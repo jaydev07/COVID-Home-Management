@@ -10,7 +10,9 @@ const Report = require("../models/report-model");
 
 //////////////////////////////////////////////////////////// GET /////////////////////////////////////////////////////////////////////////
 
+// To get the list of all the doctors present in database
 const getAllDoctors = async (req,res,next) => {
+
     let doctors;
     try{
         doctors = await Doctor.find();
@@ -18,9 +20,11 @@ const getAllDoctors = async (req,res,next) => {
         console.log(err);
         return next(new HttpError('Something went wrong', 500));
     }
+    
     res.json({doctors});
 }
 
+// To get the list of all the doctors which are nearby the patient
 const getDoctorsNearBy = async(req, res, next) => {
 
     const patientId = req.body.patientId;
@@ -53,6 +57,26 @@ const getDoctorsNearBy = async(req, res, next) => {
     res.json({ doctors: doctorsNearBy.map(doc => doc.toObject({ getters: true })) });
 }
 
+// To get the Information and data of a patient 
+const getPatientData = async (req,res,next) => {
+
+    const patientId = req.params.patientId;
+
+    let patientFound;
+    try{
+        patientFound = await Patient.findById(patientId).populate('reports').populate("prescribedMedicines");
+    }catch(err){
+        console.log(err);
+        return next(new HttpError('Something went wrong.', 500));
+    }
+    if(!patientFound){
+        return next(new HttpError('Patient not found', 500));
+    }
+
+    res.json({ patient:patientFound.toObject({ getters: true})});
+}
+
+// To get daily report which sholud be rendered when the patient logedin
 const patientDailyRender = async (req,res,next) => {
 
     const patientId = req.params.patientId;
@@ -98,11 +122,11 @@ const patientDailyRender = async (req,res,next) => {
             temperature
         }
     });
-
 }
 
 ////////////////////////////////////////////////////////////// POST ///////////////////////////////////////////////////////////////////////
 
+// To signup a patient
 const signup = async(req, res, next) => {
 
     console.log(req.body);
@@ -164,6 +188,7 @@ const signup = async(req, res, next) => {
     });
 }
 
+// To login a patient
 const login = async(req, res, next) => {
 
     console.log(req.body);
@@ -273,6 +298,7 @@ const login = async(req, res, next) => {
     }
 }
 
+// To login a patient with a jwt token for authentication
 const loginWithToken = async(req, res, next) => {
     const token = req.body.token;
 
@@ -293,6 +319,7 @@ const loginWithToken = async(req, res, next) => {
     res.json({ patient: patientFound.toObject({ getters: true }) });
 }
 
+// Used to consult a doctor and send the notification to a perticular doctor
 const consultDoctor = async(req, res, next) => {
 
     const patientId = req.body.patientId;
@@ -364,6 +391,7 @@ const consultDoctor = async(req, res, next) => {
     res.json({ doctor: doctorFound.toObject({ getters: true }), patient: patientFound.toObject({ getters: true }) });
 }
 
+// To add the symptoms & current medication of a patient
 const addSymptomDetails = async (req,res,next) => {
     const patientId = req.params.patientId;
     const {symptoms, currentMedicines, age} = req.body;
@@ -387,24 +415,6 @@ const addSymptomDetails = async (req,res,next) => {
     }
 
     res.json({patient: patientFound.toObject({ getters: true })});
-}
-
-const getPatientData = async (req,res,next) => {
-
-    const patientId = req.params.patientId;
-
-    let patientFound;
-    try{
-        patientFound = await Patient.findById(patientId).populate('reports').populate("prescribedMedicines");
-    }catch(err){
-        console.log(err);
-        return next(new HttpError('Something went wrong.', 500));
-    }
-    if(!patientFound){
-        return next(new HttpError('Patient not found', 500));
-    }
-
-    res.json({ patient:patientFound.toObject({ getters: true})});
 }
 
 exports.signup = signup;
