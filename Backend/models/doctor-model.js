@@ -23,6 +23,7 @@ const doctorSchema = new mongoose.Schema({
     patientIds:[{ type:mongoose.Types.ObjectId ,required:true, ref:'Patient' }],
 
     patients:[{
+        consulted:{type:Boolean},
         active:{type:Boolean },
         startDate:{type:String },
         endDate:{type:String }

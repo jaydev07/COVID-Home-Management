@@ -7,6 +7,9 @@ const Patient = require("../models/patient-model");
 const Doctor = require("../models/doctor-model");
 const Medicine = require("../models/medicine-model");
 
+/////////////////////////////////////////////////////////////// POST Requests ////////////////////////////////////////////////////////////
+
+// To prescribe the medicines to a perticular patient
 const addMedicines = async (req,res,next) => {
     const {doctorId,patientId,medicines} = req.body;
 
@@ -40,8 +43,7 @@ const addMedicines = async (req,res,next) => {
             console.log(err);
             return next(new HttpError('Medicine not saved', 500));   
         }
-
-        console.log(index);
+        
         if(index == medicines.length-1){
             try{
                 await patientFound.save();
