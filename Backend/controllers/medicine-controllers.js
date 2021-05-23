@@ -40,8 +40,7 @@ const addMedicines = async (req,res,next) => {
             console.log(err);
             return next(new HttpError('Medicine not saved', 500));   
         }
-
-        console.log(index);
+        
         if(index == medicines.length-1){
             try{
                 await patientFound.save();

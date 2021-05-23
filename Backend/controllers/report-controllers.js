@@ -9,6 +9,32 @@ const Doctor = require("../models/doctor-model");
 const Medicine = require("../models/medicine-model");
 const Report = require("../models/report-model");
 
+const getReportByDate = async (req,res,next) => {
+
+    const patientId = req.params.patientId;
+    const date = req.params.date;
+
+    let reportFound;
+    try{
+        reportFound = await Report.findOne({date:date , patientId:patientId});
+    }catch(err){
+        console.log(err);
+        return next(new HttpError('Something went wrong.', 500));
+    }
+    if(!reportFound){
+        return next(new HttpError('Report not found!', 500));
+    }
+
+    res.json({
+        report:{
+            date:reportFound.date,
+            oxygen:reportFound.oxygen,
+            pulse:reportFound.pulse,
+            temperature:reportFound.temperature
+        }
+    });
+}
+
 const addReport = async (req,res,next) => {
     const patientId = req.params.patientId;
     const {oxygenLevel ,pulseLevel, temperatureLevel} = req.body;
@@ -25,7 +51,10 @@ const addReport = async (req,res,next) => {
     }
 
     const d = new Date();
-    const date = d.toJSON().slice(0,10);
+    let dd = String(d.getDate()).padStart(2, '0');
+    let mm = String(d.getMonth() + 1).padStart(2, '0');
+    let yyyy = d.getFullYear();
+    let date = dd + '-' + mm + '-' + yyyy;
     let hour = d.getHours();
     const minutes = Number(d.getMinutes());
     if(minutes>30){
@@ -137,4 +166,5 @@ const addReport = async (req,res,next) => {
     res.json({report:reportFound.toObject({ getters: true })});
 }
 
+exports.getReportByDate = getReportByDate;
 exports.addReport = addReport;

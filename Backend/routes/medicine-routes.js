@@ -3,6 +3,6 @@ const router = express.Router();
 
 const medicineControllers = require("../controllers/medicine-controllers");
 
-router.post("/addmedicines" , medicineControllers.addMedicines);
+router.post("/add" , medicineControllers.addMedicines);
 
 module.exports = router;
