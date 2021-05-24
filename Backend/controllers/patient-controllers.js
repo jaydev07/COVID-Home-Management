@@ -225,10 +225,14 @@ const login = async(req, res, next) => {
         id: patientFound._id
     }, 'innoventX123');
 
-    const date = new Date().toJSON().slice(0,10);
+    let today = new Date();
+    let dd = String(today.getDate()).padStart(2, '0');
+    let mm = String(today.getMonth() + 1).padStart(2, '0');
+    let yyyy = today.getFullYear();
+    today = dd + '-' + mm + '-' + yyyy;
     let todayReport;
     try{
-        todayReport = await Report.findOne({date:date , patientId:patientFound.id});
+        todayReport = await Report.findOne({date:today , patientId:patientFound.id});
     }catch(err){
         console.log(err);
         return next(new HttpError('Something went wrong', 500));
@@ -269,7 +273,7 @@ const login = async(req, res, next) => {
                         token,
                         symptoms:patientFound.symptoms,
                         prescribedMedicines:patientFound.prescribedMedicines,
-                        date:todayReport.date,
+                        date:today,
                         oxygen,
                         pulse,
                         temperature
@@ -289,7 +293,7 @@ const login = async(req, res, next) => {
                 token,
                 symptoms:patientFound.symptoms,
                 prescribedMedicines:patientFound.prescribedMedicines,
-                date:todayReport.date,
+                date:today,
                 oxygen,
                 pulse,
                 temperature
