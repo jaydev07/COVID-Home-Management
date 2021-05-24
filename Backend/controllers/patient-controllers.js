@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const fetch = require("node-fetch");
 const bcrypt = require("bcrypt");
 const jwt = require('jsonwebtoken');
+const { validationResult } = require("express-validator");
 
 const HttpError = require("../util/http-error");
 const Patient = require("../models/patient-model");
@@ -131,6 +132,12 @@ const patientDailyRender = async (req,res,next) => {
 // To signup a patient
 const signup = async(req, res, next) => {
 
+    const error = validationResult(req);
+    if(!error.isEmpty()){
+        console.log(error);
+        return next(new HttpError('Invalid input.Please Check!',422));
+    }
+
     console.log(req.body);
     const email = req.body.email;
     let password = req.body.password;
@@ -192,6 +199,12 @@ const signup = async(req, res, next) => {
 
 // To login a patient
 const login = async(req, res, next) => {
+
+    const error = validationResult(req);
+    if(!error.isEmpty()){
+        console.log(error);
+        return next(new HttpError('Invalid input.Please Check!',422));
+    }
 
     console.log(req.body);
     const {email,password,accesskey} = req.body;
@@ -310,6 +323,12 @@ const login = async(req, res, next) => {
 
 // To login a patient with a jwt token for authentication
 const loginWithToken = async(req, res, next) => {
+    const error = validationResult(req);
+    if(!error.isEmpty()){
+        console.log(error);
+        return next(new HttpError('Invalid input.Please Check!',422));
+    }
+
     const token = req.body.token;
 
     decodedToken = jwt.verify(token, 'innoventX123');
@@ -331,6 +350,11 @@ const loginWithToken = async(req, res, next) => {
 
 // Used to consult a doctor and send the notification to a perticular doctor
 const consultDoctor = async(req, res, next) => {
+    const error = validationResult(req);
+    if(!error.isEmpty()){
+        console.log(error);
+        return next(new HttpError('Invalid input.Please Check!',422));
+    }
 
     const patientId = req.body.patientId;
     const doctorId = req.body.doctorId;
@@ -403,6 +427,12 @@ const consultDoctor = async(req, res, next) => {
 
 // To add the symptoms & current medication of a patient
 const addSymptomDetails = async (req,res,next) => {
+    const error = validationResult(req);
+    if(!error.isEmpty()){
+        console.log(error);
+        return next(new HttpError('Invalid input.Please Check!',422));
+    }
+
     const patientId = req.params.patientId;
     const {symptoms, currentMedicines, age} = req.body;
 

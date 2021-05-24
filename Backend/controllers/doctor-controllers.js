@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const fetch = require("node-fetch");
 const bcrypt = require("bcrypt");
+const { validationResult } = require("express-validator");
 
 const HttpError = require("../util/http-error");
 const Patient = require("../models/patient-model");
@@ -109,6 +110,12 @@ const getNonConsultedPatients = async (req,res,next) => {
 const signup = async(req, res, next) => {
 
     console.log(req.body);
+    const error = validationResult(req);
+    if(!error.isEmpty()){
+        console.log(error);
+        return next(new HttpError('Invalid input.Please Check!',422));
+    }
+
     const email = req.body.email;
     let password = req.body.password;
     const salt = await bcrypt.genSalt();
@@ -159,6 +166,12 @@ const signup = async(req, res, next) => {
 const login = async(req, res, next) => {
 
     console.log(req.body);
+    const error = validationResult(req);
+    if(!error.isEmpty()){
+        console.log(error);
+        return next(new HttpError('Invalid input.Please Check!',422));
+    }
+
     const {email,password,accesskey} = req.body;
 
     let doctorFound;
@@ -197,6 +210,12 @@ const login = async(req, res, next) => {
 
 // To login with a token which is stored in the memory of user's phone
 const loginWithToken = async(req, res, next) => {
+    const error = validationResult(req);
+    if(!error.isEmpty()){
+        console.log(error);
+        return next(new HttpError('Invalid input.Please Check!',422));
+    }
+
     const token = req.body.token;
 
     decodedToken = jwt.verify(token, 'innoventX123');
@@ -220,6 +239,12 @@ const loginWithToken = async(req, res, next) => {
 
 // To confirm a perticular patient & consult him.
 const confirmPatient = async (req,res,next) => {
+    const error = validationResult(req);
+    if(!error.isEmpty()){
+        console.log(error);
+        return next(new HttpError('Invalid input.Please Check!',422));
+    }
+
     const doctorId = req.params.doctorId;
     const patientId = req.body.patientId;
 
@@ -280,6 +305,7 @@ const confirmPatient = async (req,res,next) => {
         endDate:null
     });
     patientFound.prescribedMedicines = [];
+    // patientFound.reports = [];
 
     try{
         const sess = await mongoose.startSession();
@@ -328,6 +354,12 @@ const confirmPatient = async (req,res,next) => {
 
 // To reject the patient's consulting request
 const rejectPatient = async ( req,res,next) => {
+    const error = validationResult(req);
+    if(!error.isEmpty()){
+        console.log(error);
+        return next(new HttpError('Invalid input.Please Check!',422));
+    }
+
     const doctorId = req.params.doctorId;
     const patientId = req.body.patientId;
 
@@ -383,6 +415,12 @@ const rejectPatient = async ( req,res,next) => {
 
 // After the whole medication of a patient is completed
 const medicationEnded = async ( req,res,next) => {
+    const error = validationResult(req);
+    if(!error.isEmpty()){
+        console.log(error);
+        return next(new HttpError('Invalid input.Please Check!',422));
+    }
+
     const doctorId = req.params.doctorId;
     const patientId = req.body.patientId;
 

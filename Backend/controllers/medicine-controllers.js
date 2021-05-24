@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const fetch = require("node-fetch");
 const jwt = require('jsonwebtoken');
+const { validationResult } = require("express-validator");
 
 const HttpError = require("../util/http-error");
 const Patient = require("../models/patient-model");
@@ -11,6 +12,12 @@ const Medicine = require("../models/medicine-model");
 
 // To prescribe the medicines to a perticular patient
 const addMedicines = async (req,res,next) => {
+    const error = validationResult(req);
+    if(!error.isEmpty()){
+        console.log(error);
+        return next(new HttpError('Invalid input.Please Check!',422));
+    }
+
     const {doctorId,patientId,medicines} = req.body;
 
     let doctorFound,patientFound;
