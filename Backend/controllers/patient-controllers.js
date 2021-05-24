@@ -196,7 +196,7 @@ const login = async(req, res, next) => {
 
     let patientFound;
     try {
-        patientFound = await Patient.findOne({ email: email }).populate('doctorIds');
+        patientFound = await Patient.findOne({ email: email }).populate('doctorIds').populate("prescribedMedicines");
     } catch (err) {
         console.log(err);
         return next(new HttpError('Something went wrong', 500));
@@ -272,6 +272,8 @@ const login = async(req, res, next) => {
                         doctors:doctors,
                         token,
                         symptoms:patientFound.symptoms,
+                        currentMedicines:patientFound.currentMedicines,
+                        age:patientFound.age,
                         prescribedMedicines:patientFound.prescribedMedicines,
                         date:today,
                         oxygen,
@@ -292,6 +294,8 @@ const login = async(req, res, next) => {
                 doctors:doctors,
                 token,
                 symptoms:patientFound.symptoms,
+                currentMedicines:patientFound.currentMedicines,
+                age:patientFound.age,
                 prescribedMedicines:patientFound.prescribedMedicines,
                 date:today,
                 oxygen,
