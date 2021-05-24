@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const fetch = require("node-fetch");
 const jwt = require('jsonwebtoken');
 const {v4 : uuidv4} = require('uuid');
+const { validationResult } = require("express-validator");
 
 const HttpError = require("../util/http-error");
 const Patient = require("../models/patient-model");
@@ -42,6 +43,12 @@ const getReportByDate = async (req,res,next) => {
 
 // To add the patient's level into the report
 const addReport = async (req,res,next) => {
+    const error = validationResult(req);
+    if(!error.isEmpty()){
+        console.log(error);
+        return next(new HttpError('Invalid input.Please Check!',422));
+    }
+    
     const patientId = req.params.patientId;
     const {oxygenLevel ,pulseLevel, temperatureLevel} = req.body;
 
@@ -79,6 +86,8 @@ const addReport = async (req,res,next) => {
     }
 
     if(reportFound){
+        reportFound.doctorId = patientFound.doctorIds[patientFound.doctorIds.length-1].id,
+        reportFound.doctorName = patientFound.doctorIds[patientFound.doctorIds.length-1].name
         reportFound.oxygen.push({
             level:oxygenLevel,
             time:hour

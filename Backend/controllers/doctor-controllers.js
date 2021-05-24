@@ -1,12 +1,15 @@
 const mongoose = require("mongoose");
 const fetch = require("node-fetch");
 const bcrypt = require("bcrypt");
+const { validationResult } = require("express-validator");
 
 const HttpError = require("../util/http-error");
 const Patient = require("../models/patient-model");
 const Doctor = require("../models/doctor-model");
 const Report = require("../models/report-model");
 const jwt = require('jsonwebtoken');
+
+const patientKey = "AAAAfwBoauo:APA91bH_pvuOE-FBg2Ku60HJMj99KPa4t06J3BO5WlP5MG2f4BSkX5y4Jf6WXrhJUgNX6R-LOsNHsS9lFNASM0s7F4rbsdonz-5V7KQBTdsdrgK1Z_qaX7RHv8xj6GAAwcWfWb7qBJdc";
 
 //////////////////////////////////////////////////////////// GET requests /////////////////////////////////////////////////////////////
 
@@ -107,6 +110,12 @@ const getNonConsultedPatients = async (req,res,next) => {
 const signup = async(req, res, next) => {
 
     console.log(req.body);
+    const error = validationResult(req);
+    if(!error.isEmpty()){
+        console.log(error);
+        return next(new HttpError('Invalid input.Please Check!',422));
+    }
+
     const email = req.body.email;
     let password = req.body.password;
     const salt = await bcrypt.genSalt();
@@ -157,6 +166,12 @@ const signup = async(req, res, next) => {
 const login = async(req, res, next) => {
 
     console.log(req.body);
+    const error = validationResult(req);
+    if(!error.isEmpty()){
+        console.log(error);
+        return next(new HttpError('Invalid input.Please Check!',422));
+    }
+
     const {email,password,accesskey} = req.body;
 
     let doctorFound;
@@ -195,6 +210,12 @@ const login = async(req, res, next) => {
 
 // To login with a token which is stored in the memory of user's phone
 const loginWithToken = async(req, res, next) => {
+    const error = validationResult(req);
+    if(!error.isEmpty()){
+        console.log(error);
+        return next(new HttpError('Invalid input.Please Check!',422));
+    }
+
     const token = req.body.token;
 
     decodedToken = jwt.verify(token, 'innoventX123');
@@ -218,12 +239,18 @@ const loginWithToken = async(req, res, next) => {
 
 // To confirm a perticular patient & consult him.
 const confirmPatient = async (req,res,next) => {
+    const error = validationResult(req);
+    if(!error.isEmpty()){
+        console.log(error);
+        return next(new HttpError('Invalid input.Please Check!',422));
+    }
+
     const doctorId = req.params.doctorId;
     const patientId = req.body.patientId;
 
     let doctorFound, patientFound;
     try{
-        patientFound = await Patient.findById(patientId);
+        patientFound = await Patient.findById(patientId).populate("doctorIds");
         doctorFound = await Doctor.findById(doctorId).populate('patientIds');
     }catch(err){
         console.log(err);
@@ -242,13 +269,35 @@ const confirmPatient = async (req,res,next) => {
     const index = doctorFound.patientIds.findIndex(patient => patient.id===patientId);
     doctorFound.patients[index].consulted = true;
     doctorFound.patients[index].active = true;
-    patientFound.doctorIds.push(doctorFound);
     patientFound.doctors.forEach(doctor => {
         doctor.active = false;
         if(!doctor.endDate){
             doctor.endDate = today;
         }
     });
+
+    patientFound.doctorIds.forEach(async (doctor,index) => {
+        let doctorFound;
+        try{
+            doctorFound = await Doctor.findById(doctor.id).populate('patientIds');
+        }catch(err){
+            console.log(err);
+            return next(new HttpError('Something went wrong', 500));
+        }
+        const patientIndexInDoctor = doctorFound.patientIds.findIndex(patient => patient.id===patientId)
+        doctorFound.patients[patientIndexInDoctor].active = false;
+        if(!doctorFound.patients[patientIndexInDoctor].endDate){
+            doctorFound.patients[patientIndexInDoctor].endDate = today;
+        }
+        try{
+            doctorFound.save();
+        }catch(err){
+            console.log(err);
+            return next(new HttpError('Something went wrong', 500));
+        }
+    })
+    
+    patientFound.doctorIds.push(doctorFound);
     patientFound.doctors.push({
         name:doctorFound.name,
         active:true,
@@ -256,6 +305,7 @@ const confirmPatient = async (req,res,next) => {
         endDate:null
     });
     patientFound.prescribedMedicines = [];
+    // patientFound.reports = [];
 
     try{
         const sess = await mongoose.startSession();
@@ -287,7 +337,7 @@ const confirmPatient = async (req,res,next) => {
         await fetch('https://fcm.googleapis.com/fcm/send', {
             "method": 'POST',
             "headers": {
-                "Authorization": "key=" + "AAAAKNaJUws:APA91bESAgv4OUtCkTjlc_uQi5q1sPlx0XfBhS7hosvJBbXj-nVVvkT5suq3p4sTernalIZYQiIpDPXKR_AR1fUNqDBRVCbghFEseU2c9xsUUuzCz4w4LjGwTnl-dDUaQcLkq0D3l1vd",
+                "Authorization": "key=" + patientKey,
                 "Content-Type": "application/json"
             },
             "body": JSON.stringify(notification_body)
@@ -304,6 +354,12 @@ const confirmPatient = async (req,res,next) => {
 
 // To reject the patient's consulting request
 const rejectPatient = async ( req,res,next) => {
+    const error = validationResult(req);
+    if(!error.isEmpty()){
+        console.log(error);
+        return next(new HttpError('Invalid input.Please Check!',422));
+    }
+
     const doctorId = req.params.doctorId;
     const patientId = req.body.patientId;
 
@@ -342,7 +398,7 @@ const rejectPatient = async ( req,res,next) => {
         await fetch('https://fcm.googleapis.com/fcm/send', {
             "method": 'POST',
             "headers": {
-                "Authorization": "key=" + "AAAAKNaJUws:APA91bESAgv4OUtCkTjlc_uQi5q1sPlx0XfBhS7hosvJBbXj-nVVvkT5suq3p4sTernalIZYQiIpDPXKR_AR1fUNqDBRVCbghFEseU2c9xsUUuzCz4w4LjGwTnl-dDUaQcLkq0D3l1vd",
+                "Authorization": "key=" + patientKey,
                 "Content-Type": "application/json"
             },
             "body": JSON.stringify(notification_body)
@@ -359,6 +415,12 @@ const rejectPatient = async ( req,res,next) => {
 
 // After the whole medication of a patient is completed
 const medicationEnded = async ( req,res,next) => {
+    const error = validationResult(req);
+    if(!error.isEmpty()){
+        console.log(error);
+        return next(new HttpError('Invalid input.Please Check!',422));
+    }
+
     const doctorId = req.params.doctorId;
     const patientId = req.body.patientId;
 
@@ -421,7 +483,7 @@ const medicationEnded = async ( req,res,next) => {
         await fetch('https://fcm.googleapis.com/fcm/send', {
             "method": 'POST',
             "headers": {
-                "Authorization": "key=" + "AAAAKNaJUws:APA91bESAgv4OUtCkTjlc_uQi5q1sPlx0XfBhS7hosvJBbXj-nVVvkT5suq3p4sTernalIZYQiIpDPXKR_AR1fUNqDBRVCbghFEseU2c9xsUUuzCz4w4LjGwTnl-dDUaQcLkq0D3l1vd",
+                "Authorization": "key=" + patientKey,
                 "Content-Type": "application/json"
             },
             "body": JSON.stringify(notification_body)
