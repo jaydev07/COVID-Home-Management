@@ -29,46 +29,51 @@ const getPatients = async (req,res,next) => {
     }
 
     var patients=[];
-    for(let index=0 ; index<doctorFound.patientIds.length ; index++){
-        if(doctorFound.patients[index].consulted){
-            if(doctorFound.patients[index].active){
-                let patientReports;
-                try{
-                    patientReports = await Patient.findById(doctorFound.patientIds[index].id).populate('reports').populate('prescribedMedicines');
-                }catch(err){
-                    console.log(err);
-                    return next(new HttpError('Something went wrong', 500));
+
+    if(doctorFound.patientIds.length === 0){
+        for(let index=0 ; index<doctorFound.patientIds.length ; index++){
+            if(doctorFound.patients[index].consulted){
+                if(doctorFound.patients[index].active){
+                    let patientReports;
+                    try{
+                        patientReports = await Patient.findById(doctorFound.patientIds[index].id).populate('reports').populate('prescribedMedicines');
+                    }catch(err){
+                        console.log(err);
+                        return next(new HttpError('Something went wrong', 500));
+                    }
+                    patients.push({
+                        id:patientReports.id,
+                        name:patientReports.name,
+                        email:patientReports.email,
+                        phoneNo:patientReports.phoneNo,
+                        address:patientReports.address,
+                        age:patientReports.age,
+                        active:true,
+                        currentMedicines:patientReports.currentMedicines,
+                        symptoms:patientReports.symptoms,
+                        reports:patientReports.reports,
+                        prescribedMedicines:patientReports.prescribedMedicines,
+                        startDate:doctorFound.patients[index].startDate
+                    });
                 }
-                patients.push({
-                    id:patientReports.id,
-                    name:patientReports.name,
-                    email:patientReports.email,
-                    phoneNo:patientReports.phoneNo,
-                    address:patientReports.address,
-                    age:patientReports.age,
-                    active:true,
-                    currentMedicines:patientReports.currentMedicines,
-                    symptoms:patientReports.symptoms,
-                    reports:patientReports.reports,
-                    prescribedMedicines:patientReports.prescribedMedicines,
-                    startDate:doctorFound.patients[index].startDate
-                });
-            }
-            else{
-                patients.push({
-                    id:doctorFound.patientIds[index].id,
-                    name:doctorFound.patientIds[index].name,
-                    email:doctorFound.patientIds[index].email,
-                    phoneNo:doctorFound.patientIds[index].phoneNo,
-                    address:doctorFound.patientIds[index].address,
-                    active:false,
-                    startDate:doctorFound.patients[index].startDate
-                });
-            }
-            if(index === doctorFound.patientIds.length - 1){
-                res.json({patients});
+                else{
+                    patients.push({
+                        id:doctorFound.patientIds[index].id,
+                        name:doctorFound.patientIds[index].name,
+                        email:doctorFound.patientIds[index].email,
+                        phoneNo:doctorFound.patientIds[index].phoneNo,
+                        address:doctorFound.patientIds[index].address,
+                        active:false,
+                        startDate:doctorFound.patients[index].startDate
+                    });
+                }
+                if(index === doctorFound.patientIds.length - 1){
+                    res.json({patients});
+                }
             }
         }
+    }else{
+        res.json({patients});
     }
 }
 
