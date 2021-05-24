@@ -2,6 +2,8 @@ const cron = require("node-cron");
 const fetch = require("node-fetch");
 const Patient = require("./models/patient-model");
 
+const patientKey = "AAAAfwBoauo:APA91bH_pvuOE-FBg2Ku60HJMj99KPa4t06J3BO5WlP5MG2f4BSkX5y4Jf6WXrhJUgNX6R-LOsNHsS9lFNASM0s7F4rbsdonz-5V7KQBTdsdrgK1Z_qaX7RHv8xj6GAAwcWfWb7qBJdc";
+
 cron.schedule("01 00 09 * * *", async () => {
     console.log("morningBeforeB");
     let patients;
@@ -14,7 +16,6 @@ cron.schedule("01 00 09 * * *", async () => {
 
     patients.forEach(async (patient) => {
         if(patient.prescribedMedicines.length > 0){
-            console.log(patient.name);
             let medicines = [];
             patient.prescribedMedicines.forEach(medicine => {
                 if(medicine.time.morningBeforeB){
@@ -40,7 +41,7 @@ cron.schedule("01 00 09 * * *", async () => {
                 await fetch('https://fcm.googleapis.com/fcm/send',{
                     "method": 'POST',
                     "headers":{
-                        "Authorization":"key=" + "AAAAMGzW3sY:APA91bFkpmHZumZxoN-Sm7BOPYsnACLvmFc_WiR6WrbTRrWp6BdwfYvVBU4jBnhpdx0oZ2vb7gYswVAcgJX8DberZVai5MiCYMz9MEIb0gpskPpFIqtdxsyybAWdbYtOfDjKTj4fARmy",
+                        "Authorization":"key=" + patientKey,
                         "Content-Type": "application/json"
                     },
                     "body":JSON.stringify(notification_body)
@@ -92,7 +93,7 @@ cron.schedule("01 00 10 * * *", async () => {
                 await fetch('https://fcm.googleapis.com/fcm/send',{
                     "method": 'POST',
                     "headers":{
-                        "Authorization":"key=" + "AAAAMGzW3sY:APA91bFkpmHZumZxoN-Sm7BOPYsnACLvmFc_WiR6WrbTRrWp6BdwfYvVBU4jBnhpdx0oZ2vb7gYswVAcgJX8DberZVai5MiCYMz9MEIb0gpskPpFIqtdxsyybAWdbYtOfDjKTj4fARmy",
+                        "Authorization":"key=" + patientKey,
                         "Content-Type": "application/json"
                     },
                     "body":JSON.stringify(notification_body)
@@ -144,7 +145,7 @@ cron.schedule("01 00 12 * * *", async () => {
                 await fetch('https://fcm.googleapis.com/fcm/send',{
                     "method": 'POST',
                     "headers":{
-                        "Authorization":"key=" + "AAAAMGzW3sY:APA91bFkpmHZumZxoN-Sm7BOPYsnACLvmFc_WiR6WrbTRrWp6BdwfYvVBU4jBnhpdx0oZ2vb7gYswVAcgJX8DberZVai5MiCYMz9MEIb0gpskPpFIqtdxsyybAWdbYtOfDjKTj4fARmy",
+                        "Authorization":"key=" + patientKey,
                         "Content-Type": "application/json"
                     },
                     "body":JSON.stringify(notification_body)
@@ -196,7 +197,7 @@ cron.schedule("01 00 13 * * *", async () => {
                 await fetch('https://fcm.googleapis.com/fcm/send',{
                     "method": 'POST',
                     "headers":{
-                        "Authorization":"key=" + "AAAAMGzW3sY:APA91bFkpmHZumZxoN-Sm7BOPYsnACLvmFc_WiR6WrbTRrWp6BdwfYvVBU4jBnhpdx0oZ2vb7gYswVAcgJX8DberZVai5MiCYMz9MEIb0gpskPpFIqtdxsyybAWdbYtOfDjKTj4fARmy",
+                        "Authorization":"key=" + patientKey,
                         "Content-Type": "application/json"
                     },
                     "body":JSON.stringify(notification_body)
@@ -248,7 +249,7 @@ cron.schedule("01 00 20 * * *", async () => {
                 await fetch('https://fcm.googleapis.com/fcm/send',{
                     "method": 'POST',
                     "headers":{
-                        "Authorization":"key=" + "AAAAMGzW3sY:APA91bFkpmHZumZxoN-Sm7BOPYsnACLvmFc_WiR6WrbTRrWp6BdwfYvVBU4jBnhpdx0oZ2vb7gYswVAcgJX8DberZVai5MiCYMz9MEIb0gpskPpFIqtdxsyybAWdbYtOfDjKTj4fARmy",
+                        "Authorization":"key=" + patientKey,
                         "Content-Type": "application/json"
                     },
                     "body":JSON.stringify(notification_body)
@@ -300,7 +301,7 @@ cron.schedule("01 00 21 * * *", async () => {
                 await fetch('https://fcm.googleapis.com/fcm/send',{
                     "method": 'POST',
                     "headers":{
-                        "Authorization":"key=" + "AAAAMGzW3sY:APA91bFkpmHZumZxoN-Sm7BOPYsnACLvmFc_WiR6WrbTRrWp6BdwfYvVBU4jBnhpdx0oZ2vb7gYswVAcgJX8DberZVai5MiCYMz9MEIb0gpskPpFIqtdxsyybAWdbYtOfDjKTj4fARmy",
+                        "Authorization":"key=" + patientKey,
                         "Content-Type": "application/json"
                     },
                     "body":JSON.stringify(notification_body)

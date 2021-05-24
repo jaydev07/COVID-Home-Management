@@ -8,6 +8,8 @@ const Doctor = require("../models/doctor-model");
 const Report = require("../models/report-model");
 const jwt = require('jsonwebtoken');
 
+const patientKey = "AAAAfwBoauo:APA91bH_pvuOE-FBg2Ku60HJMj99KPa4t06J3BO5WlP5MG2f4BSkX5y4Jf6WXrhJUgNX6R-LOsNHsS9lFNASM0s7F4rbsdonz-5V7KQBTdsdrgK1Z_qaX7RHv8xj6GAAwcWfWb7qBJdc";
+
 //////////////////////////////////////////////////////////// GET requests /////////////////////////////////////////////////////////////
 
 // To get the whole list of patients of a perticular doctor
@@ -223,7 +225,7 @@ const confirmPatient = async (req,res,next) => {
 
     let doctorFound, patientFound;
     try{
-        patientFound = await Patient.findById(patientId);
+        patientFound = await Patient.findById(patientId).populate("doctorIds");
         doctorFound = await Doctor.findById(doctorId).populate('patientIds');
     }catch(err){
         console.log(err);
@@ -242,13 +244,35 @@ const confirmPatient = async (req,res,next) => {
     const index = doctorFound.patientIds.findIndex(patient => patient.id===patientId);
     doctorFound.patients[index].consulted = true;
     doctorFound.patients[index].active = true;
-    patientFound.doctorIds.push(doctorFound);
     patientFound.doctors.forEach(doctor => {
         doctor.active = false;
         if(!doctor.endDate){
             doctor.endDate = today;
         }
     });
+
+    patientFound.doctorIds.forEach(async (doctor,index) => {
+        let doctorFound;
+        try{
+            doctorFound = await Doctor.findById(doctor.id).populate('patientIds');
+        }catch(err){
+            console.log(err);
+            return next(new HttpError('Something went wrong', 500));
+        }
+        const patientIndexInDoctor = doctorFound.patientIds.findIndex(patient => patient.id===patientId)
+        doctorFound.patients[patientIndexInDoctor].active = false;
+        if(!doctorFound.patients[patientIndexInDoctor].endDate){
+            doctorFound.patients[patientIndexInDoctor].endDate = today;
+        }
+        try{
+            doctorFound.save();
+        }catch(err){
+            console.log(err);
+            return next(new HttpError('Something went wrong', 500));
+        }
+    })
+    
+    patientFound.doctorIds.push(doctorFound);
     patientFound.doctors.push({
         name:doctorFound.name,
         active:true,
@@ -287,7 +311,7 @@ const confirmPatient = async (req,res,next) => {
         await fetch('https://fcm.googleapis.com/fcm/send', {
             "method": 'POST',
             "headers": {
-                "Authorization": "key=" + "AAAAKNaJUws:APA91bESAgv4OUtCkTjlc_uQi5q1sPlx0XfBhS7hosvJBbXj-nVVvkT5suq3p4sTernalIZYQiIpDPXKR_AR1fUNqDBRVCbghFEseU2c9xsUUuzCz4w4LjGwTnl-dDUaQcLkq0D3l1vd",
+                "Authorization": "key=" + patientKey,
                 "Content-Type": "application/json"
             },
             "body": JSON.stringify(notification_body)
@@ -342,7 +366,7 @@ const rejectPatient = async ( req,res,next) => {
         await fetch('https://fcm.googleapis.com/fcm/send', {
             "method": 'POST',
             "headers": {
-                "Authorization": "key=" + "AAAAKNaJUws:APA91bESAgv4OUtCkTjlc_uQi5q1sPlx0XfBhS7hosvJBbXj-nVVvkT5suq3p4sTernalIZYQiIpDPXKR_AR1fUNqDBRVCbghFEseU2c9xsUUuzCz4w4LjGwTnl-dDUaQcLkq0D3l1vd",
+                "Authorization": "key=" + patientKey,
                 "Content-Type": "application/json"
             },
             "body": JSON.stringify(notification_body)
@@ -421,7 +445,7 @@ const medicationEnded = async ( req,res,next) => {
         await fetch('https://fcm.googleapis.com/fcm/send', {
             "method": 'POST',
             "headers": {
-                "Authorization": "key=" + "AAAAKNaJUws:APA91bESAgv4OUtCkTjlc_uQi5q1sPlx0XfBhS7hosvJBbXj-nVVvkT5suq3p4sTernalIZYQiIpDPXKR_AR1fUNqDBRVCbghFEseU2c9xsUUuzCz4w4LjGwTnl-dDUaQcLkq0D3l1vd",
+                "Authorization": "key=" + patientKey,
                 "Content-Type": "application/json"
             },
             "body": JSON.stringify(notification_body)

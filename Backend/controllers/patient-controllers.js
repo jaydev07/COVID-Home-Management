@@ -8,6 +8,8 @@ const Patient = require("../models/patient-model");
 const Doctor = require("../models/doctor-model");
 const Report = require("../models/report-model");
 
+const doctorKey = "AAAAKNaJUws:APA91bESAgv4OUtCkTjlc_uQi5q1sPlx0XfBhS7hosvJBbXj-nVVvkT5suq3p4sTernalIZYQiIpDPXKR_AR1fUNqDBRVCbghFEseU2c9xsUUuzCz4w4LjGwTnl-dDUaQcLkq0D3l1vd";
+
 //////////////////////////////////////////////////////////// GET /////////////////////////////////////////////////////////////////////////
 
 // To get the list of all the doctors present in database
@@ -384,13 +386,13 @@ const consultDoctor = async(req, res, next) => {
         await fetch('https://fcm.googleapis.com/fcm/send', {
             "method": 'POST',
             "headers": {
-                "Authorization": "key=" + "AAAAKNaJUws:APA91bESAgv4OUtCkTjlc_uQi5q1sPlx0XfBhS7hosvJBbXj-nVVvkT5suq3p4sTernalIZYQiIpDPXKR_AR1fUNqDBRVCbghFEseU2c9xsUUuzCz4w4LjGwTnl-dDUaQcLkq0D3l1vd",
+                "Authorization": "key=" + doctorKey,
                 "Content-Type": "application/json"
             },
             "body": JSON.stringify(notification_body)
         });
 
-        console.log("Notification sended successfully");
+        console.log("Notification sended successfully to doctor");
     } catch (err) {
         console.log(err);
         return next(new HttpError('Notification was not sended to the doctor.', 500));
