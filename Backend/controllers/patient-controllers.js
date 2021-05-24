@@ -9,7 +9,7 @@ const Patient = require("../models/patient-model");
 const Doctor = require("../models/doctor-model");
 const Report = require("../models/report-model");
 
-const doctorKey = "AAAAKNaJUws:APA91bESAgv4OUtCkTjlc_uQi5q1sPlx0XfBhS7hosvJBbXj-nVVvkT5suq3p4sTernalIZYQiIpDPXKR_AR1fUNqDBRVCbghFEseU2c9xsUUuzCz4w4LjGwTnl-dDUaQcLkq0D3l1vd";
+const doctorKey = "AAAAMGzW3sY:APA91bFkpmHZumZxoN-Sm7BOPYsnACLvmFc_WiR6WrbTRrWp6BdwfYvVBU4jBnhpdx0oZ2vb7gYswVAcgJX8DberZVai5MiCYMz9MEIb0gpskPpFIqtdxsyybAWdbYtOfDjKTj4fARmy";
 
 //////////////////////////////////////////////////////////// GET /////////////////////////////////////////////////////////////////////////
 
