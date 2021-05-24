@@ -293,7 +293,7 @@ const login = async(req, res, next) => {
                 token,
                 symptoms:patientFound.symptoms,
                 prescribedMedicines:patientFound.prescribedMedicines,
-                date:todayReport.date,
+                date:today,
                 oxygen,
                 pulse,
                 temperature
