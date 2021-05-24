@@ -71,6 +71,9 @@ const getPatients = async (req,res,next) => {
                     res.json({patients});
                 }
             }
+            else{
+                res.json({patients});
+            }
         }
     }else{
         res.json({patients});
