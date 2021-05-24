@@ -207,7 +207,7 @@ const login = async(req, res, next) => {
     }
 
     console.log(req.body);
-    const {email,password,accesskey} = req.body;
+    const {email,password,accessKey} = req.body;
 
     let patientFound;
     try {
@@ -221,7 +221,7 @@ const login = async(req, res, next) => {
         return next(new HttpError('Patient not found.Please signup!', 500));
     } else {
 
-        patientFound.accessKey = accesskey;
+        patientFound.accessKey = accessKey;
         try{
             await patientFound.save();
         }catch(err){
