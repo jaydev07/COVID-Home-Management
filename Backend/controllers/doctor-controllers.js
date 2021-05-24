@@ -30,7 +30,7 @@ const getPatients = async (req,res,next) => {
 
     var patients=[];
 
-    if(doctorFound.patientIds.length === 0){
+    if(doctorFound.patients.length > 0 ){
         for(let index=0 ; index<doctorFound.patientIds.length ; index++){
             if(doctorFound.patients[index].consulted){
                 if(doctorFound.patients[index].active){
