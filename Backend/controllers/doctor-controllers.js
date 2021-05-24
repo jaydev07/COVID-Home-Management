@@ -80,6 +80,7 @@ const getNonConsultedPatients = async (req,res,next) => {
     let doctorFound;
     try{
         doctorFound = await Doctor.findById(doctorId).populate('patientIds');
+        console.log(doctorFound.patientIds.length,doctorFound.patients.length);
     }catch(err){
         console.log(err);
         return next(new HttpError('Something went wrong', 500));
@@ -89,17 +90,19 @@ const getNonConsultedPatients = async (req,res,next) => {
     }
     
     let patients=[];
-    doctorFound.patientIds.forEach((patient,index) => {
+    for(let index=0 ; index<doctorFound.patientIds.length ; index++){
+        console.log("eee",doctorFound.patientIds[index].name,doctorFound.patients[index].consulted);
         if(!doctorFound.patients[index].consulted){
+            console.log(doctorFound.patientIds[index].name);
             patients.push({
-                id:patient.id,
-                name:patient.name,
-                address:patient.address,
-                phoneNo:patient.phoneNo,
+                id:doctorFound.patientIds[index].id,
+                name:doctorFound.patientIds[index].name,
+                address:doctorFound.patientIds[index].address,
+                phoneNo:doctorFound.patientIds[index].phoneNo,
                 startDate:doctorFound.patients[index].startDate  
             });
         }
-    });
+    }
 
     res.json({patients});
 }
