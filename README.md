@@ -1,6 +1,6 @@
 # Your Medic
 
-<img src="Logo YourMedic.svg">
+<img src="./Logo_YourMedic.svg">
 
 ---
 ## Table of Content
@@ -46,13 +46,13 @@ Through this App, we aim to provide technical support to the medical infrastruct
 
 ## Process Flow
 
-<img src="Flow Diagram.svg">
+<img src="./Flow_Diagram.svg">
 
 ---
 
 ## Data Flow Diagram
 
-
+<img src="./Data_Flow_Diagram.svg">
 
 ---
 
