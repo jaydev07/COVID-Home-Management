@@ -24,7 +24,7 @@ router.post("/login",
     [
         check("email").isEmail(),
         check("password").not().isEmpty(),
-        check('accesskey').not().isEmpty()
+        check('accessKey').not().isEmpty()
     ]
     , doctorControllers.login);
 

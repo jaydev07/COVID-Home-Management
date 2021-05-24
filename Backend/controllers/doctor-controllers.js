@@ -172,7 +172,7 @@ const login = async(req, res, next) => {
         return next(new HttpError('Invalid input.Please Check!',422));
     }
 
-    const {email,password,accesskey} = req.body;
+    const {email,password,accessKey} = req.body;
 
     let doctorFound;
     let token;
@@ -187,7 +187,7 @@ const login = async(req, res, next) => {
         return next(new HttpError('Doctor not found.Please signup!', 500));
     } else {
 
-        doctorFound.accessKey = accesskey;
+        doctorFound.accessKey = accessKey;
         try{
             await doctorFound.save();
         }catch(err){
