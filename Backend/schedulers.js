@@ -1,10 +1,19 @@
 const cron = require("node-cron");
 const fetch = require("node-fetch");
 const Patient = require("./models/patient-model");
+const nodemailer = require("nodemailer");
 
 const patientKey = "AAAAfwBoauo:APA91bH_pvuOE-FBg2Ku60HJMj99KPa4t06J3BO5WlP5MG2f4BSkX5y4Jf6WXrhJUgNX6R-LOsNHsS9lFNASM0s7F4rbsdonz-5V7KQBTdsdrgK1Z_qaX7RHv8xj6GAAwcWfWb7qBJdc";
 
-cron.schedule("01 08 15 * * *", async () => {
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth:{
+        user:"jdbhavsar213@gmail.com",
+        pass: 'jaydev@385'
+    }
+});
+
+cron.schedule("01 00 09 * * *", async () => {
     console.log("morningBeforeB");
     let patients;
     try{
@@ -23,7 +32,25 @@ cron.schedule("01 08 15 * * *", async () => {
                 }
             });
 
-            // Medicines notification which should be sended to the patient
+            //////////////////// Email
+
+            let mailOptions = {
+                from:"jaydevbhavsar.ict18@gmail.com",
+                to:`${patient.email}`,
+                subject:"Medicine Time",
+                text:`Please take this medicines before breakfast
+                      ${medicines}`
+            };
+        
+            transporter.sendMail(mailOptions, (err,info) => {
+                if(err){
+                    console.log(err);
+                }else{
+                    console.log("Email sent:" + info.response);
+                }
+            });
+
+            // Mobile Medicines notification which should be sended to the patient
             let notification = {
                 'title':`${patient.name} please take this medicines before breakfast.`,
                 'text':medicines
@@ -72,6 +99,24 @@ cron.schedule("01 00 10 * * *", async () => {
             patient.prescribedMedicines.forEach(medicine => {
                 if(medicine.time.morningAfterB){
                     medicines.push({name:medicine.name ,quantity:medicine.time.morningAfterB});
+                }
+            });
+
+            //////////////////// Email
+
+            let mailOptions = {
+                from:"jaydevbhavsar.ict18@gmail.com",
+                to:`${patient.email}`,
+                subject:"Medicine Time",
+                text:`Please take this medicines after breakfast
+                      ${medicines}`
+            };
+        
+            transporter.sendMail(mailOptions, (err,info) => {
+                if(err){
+                    console.log(err);
+                }else{
+                    console.log("Email sent:" + info.response);
                 }
             });
 
@@ -127,6 +172,24 @@ cron.schedule("01 00 12 * * *", async () => {
                 }
             });
 
+            //////////////////// Email
+
+            let mailOptions = {
+                from:"jaydevbhavsar.ict18@gmail.com",
+                to:`${patient.email}`,
+                subject:"Medicine Time",
+                text:`Please take this medicines before lunch
+                      ${medicines}`
+            };
+        
+            transporter.sendMail(mailOptions, (err,info) => {
+                if(err){
+                    console.log(err);
+                }else{
+                    console.log("Email sent:" + info.response);
+                }
+            });
+
             // Medicines notification which should be sended to the patient
             let notification = {
                 'title':`${patient.name} please take this medicines before lunch.`,
@@ -179,6 +242,24 @@ cron.schedule("01 00 13 * * *", async () => {
                 }
             });
 
+            //////////////////// Email
+
+            let mailOptions = {
+                from:"jaydevbhavsar.ict18@gmail.com",
+                to:`${patient.email}`,
+                subject:"Medicine Time",
+                text:`Please take this medicines after lunch
+                      ${medicines}`
+            };
+        
+            transporter.sendMail(mailOptions, (err,info) => {
+                if(err){
+                    console.log(err);
+                }else{
+                    console.log("Email sent:" + info.response);
+                }
+            });
+
             // Medicines notification which should be sended to the patient
             let notification = {
                 'title':`${patient.name} please take this medicines after lunch.`,
@@ -212,7 +293,7 @@ cron.schedule("01 00 13 * * *", async () => {
     });
 });
 
-cron.schedule("01 00 20 * * *", async () => {
+cron.schedule("01 22 17 * * *", async () => {
     console.log("eveningBeforeD");
     let patients;
     try{
@@ -236,6 +317,24 @@ cron.schedule("01 00 20 * * *", async () => {
                 'title':`${patient.name} please take this medicines before dinner.`,
                 'text':medicines
             }
+
+            //////////////////// Email
+
+            let mailOptions = {
+                from:"jaydevbhavsar.ict18@gmail.com",
+                to:`${patient.email}`,
+                subject:"Medicine Time",
+                text:`Please take this medicines before dinner
+                      ${medicines}`
+            };
+        
+            transporter.sendMail(mailOptions, (err,info) => {
+                if(err){
+                    console.log(err);
+                }else{
+                    console.log("Email sent:" + info.response);
+                }
+            });
 
             // Tokens of mobile devices
             let fcm_tokens = [patient.accessKey];
@@ -280,6 +379,24 @@ cron.schedule("01 00 21 * * *", async () => {
             patient.prescribedMedicines.forEach(medicine => {
                 if(medicine.time.eveningAfterD){
                     medicines.push({name:medicine.name ,quantity:medicine.time.eveningAfterD});
+                }
+            });
+
+            //////////////////// Email
+
+            let mailOptions = {
+                from:"jaydevbhavsar.ict18@gmail.com",
+                to:`${patient.email}`,
+                subject:"Medicine Time",
+                text:`Please take this medicines after dinner
+                      ${medicines}`
+            };
+        
+            transporter.sendMail(mailOptions, (err,info) => {
+                if(err){
+                    console.log(err);
+                }else{
+                    console.log("Email sent:" + info.response);
                 }
             });
 

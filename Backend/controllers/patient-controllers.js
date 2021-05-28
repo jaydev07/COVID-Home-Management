@@ -3,6 +3,8 @@ const fetch = require("node-fetch");
 const bcrypt = require("bcrypt");
 const jwt = require('jsonwebtoken');
 const { validationResult } = require("express-validator");
+const nodemailer = require("nodemailer");
+const sendgridTransport = require("nodemailer-sendgrid-transport");
 
 const HttpError = require("../util/http-error");
 const Patient = require("../models/patient-model");
@@ -343,6 +345,14 @@ const loginWithToken = async(req, res, next) => {
     res.json({ patient: patientFound.toObject({ getters: true }) });
 }
 
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth:{
+        user:"jdbhavsar213@gmail.com",
+        pass: 'jaydev@385'
+    }
+});
+
 // Used to consult a doctor and send the notification to a perticular doctor
 const consultDoctor = async(req, res, next) => {
     const error = validationResult(req);
@@ -387,6 +397,26 @@ const consultDoctor = async(req, res, next) => {
         console.log(err);
         return next(new HttpError('Data not saved in doctor', 500));
     }
+
+    //////////////////////////////////// Email //////////
+
+    let mailOptions = {
+        from:"jaydevbhavsar.ict18@gmail.com",
+        to:`${doctorFound.email}`,
+        subject:"New Patient Request",
+        text:`Hello ${doctorFound.name},
+            ${patientFound.name} from ${patientFound.city},${patientFound.state} has requested you to consult them. `
+    };
+
+    transporter.sendMail(mailOptions, (err,info) => {
+        if(err){
+            console.log(err);
+        }else{
+            console.log("Email sent:" + info.response);
+        }
+    });
+
+    ///////////////////////////////////////////////////
 
     // Notification of new patient which should be sended to the doctor 
     let notification = {

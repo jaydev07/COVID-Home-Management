@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const fetch = require("node-fetch");
 const bcrypt = require("bcrypt");
 const { validationResult } = require("express-validator");
+const nodemailer = require("nodemailer");
 
 const HttpError = require("../util/http-error");
 const Patient = require("../models/patient-model");
@@ -270,6 +271,14 @@ const loginWithToken = async(req, res, next) => {
 
 /////////////////////////////////////////////////////// PATCH Requets ////////////////////////////////////////////////////////////////////
 
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth:{
+        user:"jdbhavsar213@gmail.com",
+        pass: 'jaydev@385'
+    }
+});
+
 // To confirm a perticular patient & consult him.
 const confirmPatient = async (req,res,next) => {
     const error = validationResult(req);
@@ -301,6 +310,9 @@ const confirmPatient = async (req,res,next) => {
 
     // Activating patient in doctor's data
     const index = doctorFound.patients.findIndex(patient => patient.patientId===patientId);
+    if(index === -1){
+        return next(new HttpError('Patient has not consulted the doctor', 500));
+    }
     doctorFound.patients[index].consulted = true;
     doctorFound.patients[index].active = true;
     doctorFound.patients[index].startDate = today;
@@ -315,13 +327,6 @@ const confirmPatient = async (req,res,next) => {
 
     // Removing the patient's data from all the previous doctors data
     patientFound.doctorIds.forEach(async (doctor,index) => {
-        // let doctorFound;
-        // try{
-        //     doctorFound = await Doctor.findById(doctor.id).populate('patientIds');
-        // }catch(err){
-        //     console.log(err);
-        //     return next(new HttpError('Something went wrong', 500));
-        // }
         const patientIndexInDoctor = doctor.patients.findIndex(patient => patient.patientId === patientId);
         doctor.patients[patientIndexInDoctor].active = false;
         if(!doctor.patients[patientIndexInDoctor].endDate){
@@ -358,6 +363,26 @@ const confirmPatient = async (req,res,next) => {
         console.log(err);
         return next(new HttpError('Data not saved in patient & doctor!', 500));
     }
+
+    //////////////////////// Email ////////////////
+
+    let mailOptions = {
+        from:"jaydevbhavsar.ict18@gmail.com",
+        to:`${patientFound.email}`,
+        subject:"Consulted Request Approved",
+        text:`Congratulations ${patientFound.name},
+            ${doctorFound.name} from ${doctorFound.city},${doctorFound.state} is ready to consult you. `
+    };
+
+    transporter.sendMail(mailOptions, (err,info) => {
+        if(err){
+            console.log(err);
+        }else{
+            console.log("Email sent:" + info.response);
+        }
+    });
+
+    //////////////////////// Mobile notification /////
 
     let notification = {
         'title': `${doctorFound.name} is ready to consult you.`,
@@ -421,6 +446,26 @@ const rejectPatient = async ( req,res,next) => {
         console.log(err);
         return next(new HttpError('Something went wrong', 500));
     }
+
+    //////////////////////// Email ////////////////
+
+    let mailOptions = {
+        from:"jaydevbhavsar.ict18@gmail.com",
+        to:`${patientFound.email}`,
+        subject:"Consulted Request Rejected",
+        text:`Hey ${patientFound.name},
+            ${doctorFound.name} from ${doctorFound.city},${doctorFound.state} has rejected your consulting request. We suggest you to consult a new doctor.`
+    };
+
+    transporter.sendMail(mailOptions, (err,info) => {
+        if(err){
+            console.log(err);
+        }else{
+            console.log("Email sent:" + info.response);
+        }
+    });
+
+    //////////////////////// Mobile notification /////
 
     let notification = {
         'title': `${doctorFound.name} has not consulted you.`,
@@ -504,6 +549,26 @@ const medicationEnded = async ( req,res,next) => {
         console.log(err);
         return next(new HttpError('Data not saved in patient & doctor!', 500));
     }
+
+    //////////////////////// Email ////////////////
+
+    let mailOptions = {
+        from:"jaydevbhavsar.ict18@gmail.com",
+        to:`${patientFound.email}`,
+        subject:"Medication Completed",
+        text:`Hello ${patientFound.name},
+            ${doctorFound.name} from ${doctorFound.city},${doctorFound.state} has approved that your medication is completed. You are normal now!`
+    };
+
+    transporter.sendMail(mailOptions, (err,info) => {
+        if(err){
+            console.log(err);
+        }else{
+            console.log("Email sent:" + info.response);
+        }
+    });
+
+    ///////////////////////////////////
 
     let notification = {
         'title': `${doctorFound.name} has ended your medication.`,
