@@ -15,7 +15,10 @@ router.post("/signup",
         check("password").not().isEmpty(),
         check('accessKey').not().isEmpty(),
         check('phoneNo').not().isEmpty(),
-        check('address').not().isEmpty()
+        check('city').not().isEmpty(),
+        check('state').not().isEmpty(),
+        check('gender').not().isEmpty(),
+        check('age').not().isEmpty()
     ]
     , patientControllers.signup);
 
@@ -28,13 +31,10 @@ router.post("/login",
     ]
     , patientControllers.login);
 
-router.use(isAuth);
-
-// To get the list of all the doctors present in database
-router.get("/all/doctors", patientControllers.getAllDoctors);
+// router.use(isAuth);
 
 // To get the list of all the doctors which are nearby the patient
-router.get("/doctorsNearBy",  patientControllers.getDoctorsNearBy);
+router.get("/doctorsNearBy/:patientId",  patientControllers.getDoctorsNearBy);
 
 // To get the Information and data of a patient  
 router.get("/info/:patientId", patientControllers.getPatientData);
@@ -62,7 +62,6 @@ router.post("/addSymptomDetails/:patientId",
     [
         check("symptoms").not().isEmpty(),
         check('currentMedicines').not().isEmpty(),
-        check('age').not().isEmpty()
     ]
     , patientControllers.addSymptomDetails);
 

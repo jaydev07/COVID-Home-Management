@@ -4,7 +4,7 @@ const Patient = require("./models/patient-model");
 
 const patientKey = "AAAAfwBoauo:APA91bH_pvuOE-FBg2Ku60HJMj99KPa4t06J3BO5WlP5MG2f4BSkX5y4Jf6WXrhJUgNX6R-LOsNHsS9lFNASM0s7F4rbsdonz-5V7KQBTdsdrgK1Z_qaX7RHv8xj6GAAwcWfWb7qBJdc";
 
-cron.schedule("01 00 09 * * *", async () => {
+cron.schedule("01 08 15 * * *", async () => {
     console.log("morningBeforeB");
     let patients;
     try{
@@ -19,7 +19,7 @@ cron.schedule("01 00 09 * * *", async () => {
             let medicines = [];
             patient.prescribedMedicines.forEach(medicine => {
                 if(medicine.time.morningBeforeB){
-                    medicines.push(medicine.name);
+                    medicines.push({name:medicine.name ,quantity:medicine.time.morningBeforeB});
                 }
             });
 
@@ -71,7 +71,7 @@ cron.schedule("01 00 10 * * *", async () => {
             let medicines = [];
             patient.prescribedMedicines.forEach(medicine => {
                 if(medicine.time.morningAfterB){
-                    medicines.push(medicine.name);
+                    medicines.push({name:medicine.name ,quantity:medicine.time.morningAfterB});
                 }
             });
 
@@ -123,7 +123,7 @@ cron.schedule("01 00 12 * * *", async () => {
             let medicines = [];
             patient.prescribedMedicines.forEach(medicine => {
                 if(medicine.time.afternoonBeforeL){
-                    medicines.push(medicine.name);
+                    medicines.push({name:medicine.name ,quantity:medicine.time.afternoonBeforeL});
                 }
             });
 
@@ -175,7 +175,7 @@ cron.schedule("01 00 13 * * *", async () => {
             let medicines = [];
             patient.prescribedMedicines.forEach(medicine => {
                 if(medicine.time.afternoonAfterL){
-                    medicines.push(medicine.name);
+                    medicines.push({name:medicine.name ,quantity:medicine.time.afternoonAfterL});
                 }
             });
 
@@ -227,7 +227,7 @@ cron.schedule("01 00 20 * * *", async () => {
             let medicines = [];
             patient.prescribedMedicines.forEach(medicine => {
                 if(medicine.time.eveningBeforeD){
-                    medicines.push(medicine.name);
+                    medicines.push({name:medicine.name ,quantity:medicine.time.eveningBeforeD});
                 }
             });
 
@@ -279,7 +279,7 @@ cron.schedule("01 00 21 * * *", async () => {
             let medicines = [];
             patient.prescribedMedicines.forEach(medicine => {
                 if(medicine.time.eveningAfterD){
-                    medicines.push(medicine.name);
+                    medicines.push({name:medicine.name ,quantity:medicine.time.eveningAfterD});
                 }
             });
 

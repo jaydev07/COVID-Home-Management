@@ -13,24 +13,10 @@ const doctorKey = "AAAAMGzW3sY:APA91bFkpmHZumZxoN-Sm7BOPYsnACLvmFc_WiR6WrbTRrWp6
 
 //////////////////////////////////////////////////////////// GET /////////////////////////////////////////////////////////////////////////
 
-// To get the list of all the doctors present in database
-const getAllDoctors = async (req,res,next) => {
-
-    let doctors;
-    try{
-        doctors = await Doctor.find();
-    }catch (err) {
-        console.log(err);
-        return next(new HttpError('Something went wrong', 500));
-    }
-    
-    res.json({doctors});
-}
-
 // To get the list of all the doctors which are nearby the patient
 const getDoctorsNearBy = async(req, res, next) => {
 
-    const patientId = req.body.patientId;
+    const patientId = req.params.patientId;
 
     let patientFound;
     try {
@@ -44,20 +30,27 @@ const getDoctorsNearBy = async(req, res, next) => {
         return next(new HttpError('Patient not found', 500));
     }
 
-    let patientCity = patientFound.address;
-    let doctorsNearBy;
+    let patientCity = patientFound.city;
+    let patientState = patientFound.state;
+    let doctorsNearByCity;
+    let doctorsNearByState;
     try {
-        doctorsNearBy = await Doctor.find({ address: patientCity });
+        doctorsNearByCity = await Doctor.find({ city: patientCity, state: patientState});
+        doctorsNearByState = await Doctor.find({ state: patientState});
     } catch (err) {
         console.log(err);
         return next(new HttpError('Something went wrong', 500));
     }
 
-    if (doctorsNearBy.length === 0) {
-        doctorsNearBy = await Doctor.find();
+    if (doctorsNearByCity.length === 0) {
+        if(doctorsNearByState.length === 0){
+            res.json({message:"No doctors present from your state, please consult other doctors."});
+        }else{
+            res.json({ doctors: doctorsNearByState.map(doc => doc.toObject({ getters: true })) });        
+        }    
+    }else{
+        res.json({ doctors: doctorsNearByCity.map(doc => doc.toObject({ getters: true })) });
     }
-
-    res.json({ doctors: doctorsNearBy.map(doc => doc.toObject({ getters: true })) });
 }
 
 // To get the Information and data of a patient 
@@ -163,8 +156,10 @@ const signup = async(req, res, next) => {
         password,
         accessKey: req.body.accessKey,
         phoneNo: req.body.phoneNo,
-        address: req.body.address,
-        age:null,
+        city: req.body.city,
+        state: req.body.state,
+        gender: req.body.gender,
+        age:req.body.age,
         doctorIds: [],
         doctors: [],
         previousDiseases: [],
@@ -376,10 +371,11 @@ const consultDoctor = async(req, res, next) => {
     var dd = String(today.getDate()).padStart(2, '0');
     var mm = String(today.getMonth() + 1).padStart(2, '0');
     var yyyy = today.getFullYear();
-    today = dd + '/' + mm + '/' + yyyy;
+    today = dd + '-' + mm + '-' + yyyy;
 
     doctorFound.patientIds.push(patientFound);
     doctorFound.patients.push({
+        patientId:patientFound.id,
         consulted: false,
         active: false,
         startDate: today,
@@ -434,7 +430,7 @@ const addSymptomDetails = async (req,res,next) => {
     }
 
     const patientId = req.params.patientId;
-    const {symptoms, currentMedicines, age} = req.body;
+    const {symptoms, currentMedicines} = req.body;
 
     let patientFound;
     try{
@@ -446,7 +442,6 @@ const addSymptomDetails = async (req,res,next) => {
 
     patientFound.symptoms = symptoms;
     patientFound.currentMedicines = currentMedicines;
-    patientFound.age = age;
     try{
         patientFound.save();
     }catch(err){
@@ -465,4 +460,3 @@ exports.loginWithToken = loginWithToken;
 exports.addSymptomDetails = addSymptomDetails;
 exports.patientDailyRender = patientDailyRender;
 exports.getPatientData = getPatientData;
-exports.getAllDoctors = getAllDoctors;

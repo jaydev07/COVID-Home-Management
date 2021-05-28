@@ -5,7 +5,7 @@ const { check } = require("express-validator");
 const isAuth = require('../middlewares/is-auth');
 const medicineControllers = require("../controllers/medicine-controllers");
 
-router.use(isAuth);
+// router.use(isAuth);
 
 // To prescribe the medicines to a perticular patient
 router.post("/add" ,

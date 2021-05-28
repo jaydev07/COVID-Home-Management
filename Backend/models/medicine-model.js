@@ -15,12 +15,12 @@ const medicineSchema = new mongoose.Schema({
     doctorId:{type:mongoose.Types.ObjectId , required:true , ref:'Doctor'},
 
     time:{
-        morningBeforeB:{type:Boolean , required:true},
-        morningAfterB:{type:Boolean , required:true},
-        afternoonBeforeL:{type:Boolean , required:true},
-        afternoonAfterL:{type:Boolean , required:true},
-        eveningBeforeD:{type:Boolean , required:true},
-        eveningAfterD:{type:Boolean , required:true}
+        morningBeforeB:{type:Number},
+        morningAfterB:{type:Number },
+        afternoonBeforeL:{type:Number },
+        afternoonAfterL:{type:Number },
+        eveningBeforeD:{type:Number },
+        eveningAfterD:{type:Number }
     }
 });
 

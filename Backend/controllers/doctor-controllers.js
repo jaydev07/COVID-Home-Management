@@ -28,9 +28,10 @@ const getPatients = async (req,res,next) => {
         return next(new HttpError('Doctor not found', 500));
     }
 
-    var patients=[];
+    let patients=[];
+    let insertPatient;
 
-    if(doctorFound.patients.length > 0 ){
+    if(doctorFound.patientIds.length > 0 ){
         for(let index=0 ; index<doctorFound.patientIds.length ; index++){
             if(doctorFound.patients[index].consulted){
                 if(doctorFound.patients[index].active){
@@ -41,12 +42,14 @@ const getPatients = async (req,res,next) => {
                         console.log(err);
                         return next(new HttpError('Something went wrong', 500));
                     }
-                    patients.push({
+                    insertPatient = {
                         id:patientReports.id,
                         name:patientReports.name,
                         email:patientReports.email,
                         phoneNo:patientReports.phoneNo,
-                        address:patientReports.address,
+                        city:patientReports.city,
+                        state:patientReports.state,
+                        gender:patientReports.gender,
                         age:patientReports.age,
                         active:true,
                         currentMedicines:patientReports.currentMedicines,
@@ -54,29 +57,35 @@ const getPatients = async (req,res,next) => {
                         reports:patientReports.reports,
                         prescribedMedicines:patientReports.prescribedMedicines,
                         startDate:doctorFound.patients[index].startDate
-                    });
+                    };
                 }
                 else{
-                    patients.push({
+                    insertPatient = {
                         id:doctorFound.patientIds[index].id,
                         name:doctorFound.patientIds[index].name,
                         email:doctorFound.patientIds[index].email,
                         phoneNo:doctorFound.patientIds[index].phoneNo,
-                        address:doctorFound.patientIds[index].address,
+                        city:doctorFound.patientIds[index].city,
+                        state:doctorFound.patientIds[index].state,
+                        gender:doctorFound.patientIds[index].gender,
                         active:false,
-                        startDate:doctorFound.patients[index].startDate
-                    });
+                        startDate:doctorFound.patients[index].startDate,
+                        endDate:doctorFound.patients[index].endDate
+                    };
                 }
+                patients.push(insertPatient);
                 if(index === doctorFound.patientIds.length - 1){
-                    res.json({patients});
+                    return res.json({patients});
                 }
             }
             else{
-                res.json({patients});
+                if(index === doctorFound.patientIds.length - 1){
+                    return res.json({patients});
+                }
             }
         }
     }else{
-        res.json({patients});
+        return res.json({patients});
     }
 }
 
@@ -99,7 +108,6 @@ const getNonConsultedPatients = async (req,res,next) => {
     
     let patients=[];
     for(let index=0 ; index<doctorFound.patientIds.length ; index++){
-        console.log("eee",doctorFound.patientIds[index].name,doctorFound.patients[index].consulted);
         if(!doctorFound.patients[index].consulted){
             console.log(doctorFound.patientIds[index].name);
             patients.push({
@@ -115,12 +123,25 @@ const getNonConsultedPatients = async (req,res,next) => {
     res.json({patients});
 }
 
+// To get the list of all the doctors present in database
+const getAllDoctors = async (req,res,next) => {
+
+    let doctors;
+    try{
+        doctors = await Doctor.find();
+    }catch (err) {
+        console.log(err);
+        return next(new HttpError('Something went wrong', 500));
+    }
+    
+    res.json({doctors});
+}
+
 ////////////////////////////////////////////////////////// POST Requests ////////////////////////////////////////////////////////////////
 
 // To signup a doctor
 const signup = async(req, res, next) => {
 
-    console.log(req.body);
     const error = validationResult(req);
     if(!error.isEmpty()){
         console.log(error);
@@ -150,7 +171,8 @@ const signup = async(req, res, next) => {
         password,
         accessKey: req.body.accessKey,
         phoneNo: req.body.phoneNo,
-        address: req.body.address,
+        city: req.body.city,
+        state: req.body.state,
         doctorLicense: req.body.doctorLicense,
         designation: req.body.designation,
         patientIds: [],
@@ -275,11 +297,15 @@ const confirmPatient = async (req,res,next) => {
     let dd = String(today.getDate()).padStart(2, '0');
     let mm = String(today.getMonth() + 1).padStart(2, '0');
     let yyyy = today.getFullYear();
-    today = dd + '/' + mm + '/' + yyyy;
+    today = dd + '-' + mm + '-' + yyyy;
 
-    const index = doctorFound.patientIds.findIndex(patient => patient.id===patientId);
+    // Activating patient in doctor's data
+    const index = doctorFound.patients.findIndex(patient => patient.patientId===patientId);
     doctorFound.patients[index].consulted = true;
     doctorFound.patients[index].active = true;
+    doctorFound.patients[index].startDate = today;
+
+    // Deactivating all the previous doctors in patient
     patientFound.doctors.forEach(doctor => {
         doctor.active = false;
         if(!doctor.endDate){
@@ -287,27 +313,29 @@ const confirmPatient = async (req,res,next) => {
         }
     });
 
+    // Removing the patient's data from all the previous doctors data
     patientFound.doctorIds.forEach(async (doctor,index) => {
-        let doctorFound;
+        // let doctorFound;
+        // try{
+        //     doctorFound = await Doctor.findById(doctor.id).populate('patientIds');
+        // }catch(err){
+        //     console.log(err);
+        //     return next(new HttpError('Something went wrong', 500));
+        // }
+        const patientIndexInDoctor = doctor.patients.findIndex(patient => patient.patientId === patientId);
+        doctor.patients[patientIndexInDoctor].active = false;
+        if(!doctor.patients[patientIndexInDoctor].endDate){
+            doctor.patients[patientIndexInDoctor].endDate = today;
+        }
         try{
-            doctorFound = await Doctor.findById(doctor.id).populate('patientIds');
+            doctor.save();
         }catch(err){
             console.log(err);
-            return next(new HttpError('Something went wrong', 500));
-        }
-        const patientIndexInDoctor = doctorFound.patientIds.findIndex(patient => patient.id===patientId)
-        doctorFound.patients[patientIndexInDoctor].active = false;
-        if(!doctorFound.patients[patientIndexInDoctor].endDate){
-            doctorFound.patients[patientIndexInDoctor].endDate = today;
-        }
-        try{
-            doctorFound.save();
-        }catch(err){
-            console.log(err);
-            return next(new HttpError('Something went wrong', 500));
+            return next(new HttpError('Something went wrong.Previous doctors data not saved', 500));
         }
     })
     
+    // Adding the new Doctor in patient
     patientFound.doctorIds.push(doctorFound);
     patientFound.doctors.push({
         name:doctorFound.name,
@@ -383,7 +411,7 @@ const rejectPatient = async ( req,res,next) => {
         return next(new HttpError('Something went wrong', 500));
     }
 
-    const index = doctorFound.patientIds.findIndex(patient => patient.id===patientId);
+    const index = doctorFound.patients.findIndex(patient => patient.patientId===patientId);
     doctorFound.patients.splice(index,1);
     doctorFound.patientIds.pull(patientFound);
  
@@ -451,7 +479,7 @@ const medicationEnded = async ( req,res,next) => {
     let dd = String(today.getDate()).padStart(2, '0');
     let mm = String(today.getMonth() + 1).padStart(2, '0');
     let yyyy = today.getFullYear();
-    today = dd + '/' + mm + '/' + yyyy;
+    today = dd + '-' + mm + '-' + yyyy;
 
     const patientIndex = doctorFound.patientIds.findIndex(patient => patient.id===patientId);
     doctorFound.patients[patientIndex].active = false;
@@ -518,3 +546,4 @@ exports.getNonConsultedPatients = getNonConsultedPatients;
 exports.confirmPatient = confirmPatient;
 exports.rejectPatient = rejectPatient;
 exports.medicationEnded = medicationEnded;
+exports.getAllDoctors = getAllDoctors;
