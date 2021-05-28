@@ -31,7 +31,7 @@ router.post("/login",
     ]
     , patientControllers.login);
 
-// router.use(isAuth);
+router.use(isAuth);
 
 // To get the list of all the doctors which are nearby the patient
 router.get("/doctorsNearBy/:patientId",  patientControllers.getDoctorsNearBy);

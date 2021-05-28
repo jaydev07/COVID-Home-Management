@@ -29,7 +29,7 @@ router.post("/login",
     ]
     , doctorControllers.login);
 
-// router.use(isAuth);
+router.use(isAuth);
 
 // To get the list of all the doctors present in database
 router.get("/all", doctorControllers.getAllDoctors);

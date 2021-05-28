@@ -6,7 +6,7 @@ const { check } = require("express-validator");
 const isAuth = require('../middlewares/is-auth');
 const reportControllers = require("../controllers/report-controllers");
 
-// router.use(isAuth);
+router.use(isAuth);
 
 // To get a patient's report of a perticular day
 router.get("/:date/:patientId", reportControllers.getReportByDate);
