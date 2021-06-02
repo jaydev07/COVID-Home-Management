@@ -9,8 +9,6 @@
 * [Requirements](#requirements)
 * [Technologies](#technologies)
 * [Process Flow](#process-flow)
-* [Data Flow Diagram](#data-flow-diagram)
-* [Author Info](#author-info)
 
 ---
 
@@ -50,15 +48,3 @@ Through this App, we aim to provide technical support to the medical infrastruct
 
 ---
 
-## Data Flow Diagram
-
-<img src="./Data_Flow_Diagram.svg">
-
----
-
-## Author Info
-
-* [Dhruv Mehta](https://github.com/dhruv-mehta99)
-* [Gracika Rajput](https://github.com/gracika)
-* [Ishan Patel](https://github.com/ishan1410)
-* [Yash Shah](https://github.com/yash156)

@@ -14,9 +14,13 @@ const patientSchema = new mongoose.Schema({
 
     phoneNo:{type:Number , required:true , unique:true},
 
-    address:{ type:String , required:true },
+    city:{ type:String , required:true },
 
-    age:{ type:Number },
+    state:{ type:String , required:true },
+
+    gender:{ type:String , required:true },
+
+    age:{ type:Number , required:true },
 
     doctorIds:[{ type:mongoose.Types.ObjectId ,required:true, ref:'Doctor' }],
 

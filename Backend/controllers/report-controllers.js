@@ -86,8 +86,9 @@ const addReport = async (req,res,next) => {
     }
 
     if(reportFound){
-        reportFound.doctorId = patientFound.doctorIds[patientFound.doctorIds.length-1].id,
-        reportFound.doctorName = patientFound.doctorIds[patientFound.doctorIds.length-1].name
+        const indexOfActiveDoctor = patientFound.doctors.findIndex((doctor) => doctor.active);
+        reportFound.doctorId = patientFound.doctorIds[indexOfActiveDoctor].id,
+        reportFound.doctorName = patientFound.doctorIds[indexOfActiveDoctor].name
         reportFound.oxygen.push({
             level:oxygenLevel,
             time:hour

@@ -14,7 +14,9 @@ const doctorSchema = new mongoose.Schema({
 
     phoneNo:{type:Number , required:true , unique:true},
 
-    address:{ type:String , required:true },
+    city:{ type:String , required:true },
+
+    state:{ type:String , required:true },
 
     doctorLicense:{type:String , required:true},
 
@@ -23,6 +25,7 @@ const doctorSchema = new mongoose.Schema({
     patientIds:[{ type:mongoose.Types.ObjectId ,required:true, ref:'Patient' }],
 
     patients:[{
+        patientId:{type:String},
         consulted:{type:Boolean},
         active:{type:Boolean },
         startDate:{type:String },

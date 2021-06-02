@@ -14,7 +14,8 @@ router.post("/signup",
         check("password").not().isEmpty(),
         check('accessKey').not().isEmpty(),
         check('phoneNo').not().isEmpty(),
-        check('address').not().isEmpty(),
+        check('city').not().isEmpty(),
+        check('state').not().isEmpty(),
         check('doctorLicense').not().isEmpty(),
         check('designation').not().isEmpty()
     ], doctorControllers.signup);
@@ -29,6 +30,9 @@ router.post("/login",
     , doctorControllers.login);
 
 router.use(isAuth);
+
+// To get the list of all the doctors present in database
+router.get("/all", doctorControllers.getAllDoctors);
 
 // To get the whole list of patients of a perticular doctor 
 router.get("/patients/:doctorId", doctorControllers.getPatients);

@@ -3,6 +3,8 @@ const fetch = require("node-fetch");
 const bcrypt = require("bcrypt");
 const jwt = require('jsonwebtoken');
 const { validationResult } = require("express-validator");
+const nodemailer = require("nodemailer");
+const sendgridTransport = require("nodemailer-sendgrid-transport");
 
 const HttpError = require("../util/http-error");
 const Patient = require("../models/patient-model");
@@ -13,24 +15,10 @@ const doctorKey = "AAAAMGzW3sY:APA91bFkpmHZumZxoN-Sm7BOPYsnACLvmFc_WiR6WrbTRrWp6
 
 //////////////////////////////////////////////////////////// GET /////////////////////////////////////////////////////////////////////////
 
-// To get the list of all the doctors present in database
-const getAllDoctors = async (req,res,next) => {
-
-    let doctors;
-    try{
-        doctors = await Doctor.find();
-    }catch (err) {
-        console.log(err);
-        return next(new HttpError('Something went wrong', 500));
-    }
-    
-    res.json({doctors});
-}
-
 // To get the list of all the doctors which are nearby the patient
 const getDoctorsNearBy = async(req, res, next) => {
 
-    const patientId = req.body.patientId;
+    const patientId = req.params.patientId;
 
     let patientFound;
     try {
@@ -44,20 +32,27 @@ const getDoctorsNearBy = async(req, res, next) => {
         return next(new HttpError('Patient not found', 500));
     }
 
-    let patientCity = patientFound.address;
-    let doctorsNearBy;
+    let patientCity = patientFound.city;
+    let patientState = patientFound.state;
+    let doctorsNearByCity;
+    let doctorsNearByState;
     try {
-        doctorsNearBy = await Doctor.find({ address: patientCity });
+        doctorsNearByCity = await Doctor.find({ city: patientCity, state: patientState});
+        doctorsNearByState = await Doctor.find({ state: patientState});
     } catch (err) {
         console.log(err);
         return next(new HttpError('Something went wrong', 500));
     }
 
-    if (doctorsNearBy.length === 0) {
-        doctorsNearBy = await Doctor.find();
+    if (doctorsNearByCity.length === 0) {
+        if(doctorsNearByState.length === 0){
+            res.json({message:"No doctors present from your state, please consult other doctors."});
+        }else{
+            res.json({ doctors: doctorsNearByState.map(doc => doc.toObject({ getters: true })) });        
+        }    
+    }else{
+        res.json({ doctors: doctorsNearByCity.map(doc => doc.toObject({ getters: true })) });
     }
-
-    res.json({ doctors: doctorsNearBy.map(doc => doc.toObject({ getters: true })) });
 }
 
 // To get the Information and data of a patient 
@@ -163,8 +158,10 @@ const signup = async(req, res, next) => {
         password,
         accessKey: req.body.accessKey,
         phoneNo: req.body.phoneNo,
-        address: req.body.address,
-        age:null,
+        city: req.body.city,
+        state: req.body.state,
+        gender: req.body.gender,
+        age:req.body.age,
         doctorIds: [],
         doctors: [],
         previousDiseases: [],
@@ -348,6 +345,14 @@ const loginWithToken = async(req, res, next) => {
     res.json({ patient: patientFound.toObject({ getters: true }) });
 }
 
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth:{
+        user:"jdbhavsar213@gmail.com",
+        pass: 'jaydev@385'
+    }
+});
+
 // Used to consult a doctor and send the notification to a perticular doctor
 const consultDoctor = async(req, res, next) => {
     const error = validationResult(req);
@@ -376,10 +381,11 @@ const consultDoctor = async(req, res, next) => {
     var dd = String(today.getDate()).padStart(2, '0');
     var mm = String(today.getMonth() + 1).padStart(2, '0');
     var yyyy = today.getFullYear();
-    today = dd + '/' + mm + '/' + yyyy;
+    today = dd + '-' + mm + '-' + yyyy;
 
     doctorFound.patientIds.push(patientFound);
     doctorFound.patients.push({
+        patientId:patientFound.id,
         consulted: false,
         active: false,
         startDate: today,
@@ -391,6 +397,26 @@ const consultDoctor = async(req, res, next) => {
         console.log(err);
         return next(new HttpError('Data not saved in doctor', 500));
     }
+
+    //////////////////////////////////// Email //////////
+
+    let mailOptions = {
+        from:"jaydevbhavsar.ict18@gmail.com",
+        to:`${doctorFound.email}`,
+        subject:"New Patient Request",
+        text:`Hello ${doctorFound.name},
+            ${patientFound.name} from ${patientFound.city},${patientFound.state} has requested you to consult them. `
+    };
+
+    transporter.sendMail(mailOptions, (err,info) => {
+        if(err){
+            console.log(err);
+        }else{
+            console.log("Email sent:" + info.response);
+        }
+    });
+
+    ///////////////////////////////////////////////////
 
     // Notification of new patient which should be sended to the doctor 
     let notification = {
@@ -434,7 +460,7 @@ const addSymptomDetails = async (req,res,next) => {
     }
 
     const patientId = req.params.patientId;
-    const {symptoms, currentMedicines, age} = req.body;
+    const {symptoms, currentMedicines} = req.body;
 
     let patientFound;
     try{
@@ -446,7 +472,6 @@ const addSymptomDetails = async (req,res,next) => {
 
     patientFound.symptoms = symptoms;
     patientFound.currentMedicines = currentMedicines;
-    patientFound.age = age;
     try{
         patientFound.save();
     }catch(err){
@@ -465,4 +490,3 @@ exports.loginWithToken = loginWithToken;
 exports.addSymptomDetails = addSymptomDetails;
 exports.patientDailyRender = patientDailyRender;
 exports.getPatientData = getPatientData;
-exports.getAllDoctors = getAllDoctors;
