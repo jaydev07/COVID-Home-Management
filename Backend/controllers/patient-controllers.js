@@ -51,6 +51,7 @@ const getDoctorsNearBy = async(req, res, next) => {
     }
 }
 
+// ** Only send current date report
 // To get the Information and data of a patient 
 const getPatientData = async (req,res,next) => {
 
@@ -108,8 +109,11 @@ const patientDailyRender = async (req,res,next) => {
 
     res.json({
         info:{
+            remarksForDoctor:patientFound.remarksForDoctor,
+            remarksFromDoctor:patientFound.remarksFromDoctor,
             symptoms:patientFound.symptoms,
             prescribedMedicines:patientFound.prescribedMedicines,
+            chronicDisease:patientFound.chronicDisease,
             date:todayReport.date,
             oxygen,
             pulse,
@@ -157,10 +161,13 @@ const signup = async(req, res, next) => {
         state: req.body.state,
         gender: req.body.gender,
         age:Number(req.body.age),
+        accessKey:req.body.accessKey,
         doctorIds: [],
         doctors: [],
-        previousDiseases: [],
-        symptoms: null,
+        symptoms: [],
+        remarksForDoctor:null,
+        remarksFromDoctor:null,
+        chronicDisease:[],
         reports: [],
         prescribedMedicines: []
     });
@@ -182,8 +189,11 @@ const signup = async(req, res, next) => {
             id:newPatient.id,
             name:newPatient.name, 
             email:newPatient.email, 
-            phoneNo:newPatient.phoneNo, 
-            address:newPatient.address,
+            phoneNo:newPatient.phoneNo,
+            city:newPatient.city,
+            state:newPatient.state,
+            age:newPatient.age,
+            gender:newPatient.gender,
             token
         }  
     });
@@ -265,14 +275,13 @@ const login = async(req, res, next) => {
                         id:patientFound.id,
                         name:patientFound.name, 
                         email:patientFound.email, 
-                        phoneNo:patientFound.phoneNo, 
-                        address:patientFound.address, 
+                        phoneNo:patientFound.phoneNo,
+                        city:patientFound.city,
+                        state:patientFound.state, 
+                        gender:patientFound.gender,
                         doctors:doctors,
                         token,
-                        symptoms:patientFound.symptoms,
-                        currentMedicines:patientFound.currentMedicines,
                         age:patientFound.age,
-                        prescribedMedicines:patientFound.prescribedMedicines,
                         date:today,
                         oxygen,
                         pulse,
@@ -287,14 +296,13 @@ const login = async(req, res, next) => {
                 id:patientFound.id,
                 name:patientFound.name, 
                 email:patientFound.email, 
-                phoneNo:patientFound.phoneNo, 
-                address:patientFound.address, 
+                phoneNo:patientFound.phoneNo,
+                city:patientFound.city,
+                state:patientFound.state, 
+                gender:patientFound.gender,
                 doctors:doctors,
                 token,
-                symptoms:patientFound.symptoms,
-                currentMedicines:patientFound.currentMedicines,
                 age:patientFound.age,
-                prescribedMedicines:patientFound.prescribedMedicines,
                 date:today,
                 oxygen,
                 pulse,
@@ -341,6 +349,8 @@ const transporter = nodemailer.createTransport({
 
 // Used to consult a doctor and send the notification to a perticular doctor
 const consultDoctor = async(req, res, next) => {
+
+    // age, gender, noteForDoctor, symptoms, cronicDes 
     const error = validationResult(req);
     if(!error.isEmpty()){
         console.log(error);
