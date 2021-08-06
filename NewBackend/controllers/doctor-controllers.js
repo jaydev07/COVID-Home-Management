@@ -47,29 +47,28 @@ const getPatients = async (req,res,next) => {
                     insertPatient = {
                         id:patientReports.id,
                         name:patientReports.name,
-                        email:patientReports.email,
                         phoneNo:patientReports.phoneNo,
-                        city:patientReports.city,
-                        state:patientReports.state,
-                        gender:patientReports.gender,
+                        // city:patientReports.city,
+                        // state:patientReports.state,
+                        // gender:patientReports.gender,
                         age:patientReports.age,
                         active:true,
-                        currentMedicines:patientReports.currentMedicines,
-                        symptoms:patientReports.symptoms,
-                        reports:patientReports.reports,
-                        prescribedMedicines:patientReports.prescribedMedicines,
-                        startDate:doctorFound.patients[index].startDate
+                        // currentMedicines:patientReports.currentMedicines,
+                        // symptoms:patientReports.symptoms,
+                        report:patientReports.reports[patientReports.reports.length-1],
+                        // prescribedMedicines:patientReports.prescribedMedicines,
+                        // startDate:doctorFound.patients[index].startDate
                     };
                 }
                 else{
                     insertPatient = {
                         id:doctorFound.patientIds[index].id,
                         name:doctorFound.patientIds[index].name,
-                        email:doctorFound.patientIds[index].email,
+                        // email:doctorFound.patientIds[index].email,
                         phoneNo:doctorFound.patientIds[index].phoneNo,
-                        city:doctorFound.patientIds[index].city,
-                        state:doctorFound.patientIds[index].state,
-                        gender:doctorFound.patientIds[index].gender,
+                        // city:doctorFound.patientIds[index].city,
+                        // state:doctorFound.patientIds[index].state,
+                        // gender:doctorFound.patientIds[index].gender,
                         active:false,
                         startDate:doctorFound.patients[index].startDate,
                         endDate:doctorFound.patients[index].endDate

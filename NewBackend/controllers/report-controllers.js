@@ -89,19 +89,26 @@ const addReport = async (req,res,next) => {
         const indexOfActiveDoctor = patientFound.doctors.findIndex((doctor) => doctor.active);
         reportFound.doctorId = patientFound.doctorIds[indexOfActiveDoctor].id,
         reportFound.doctorName = patientFound.doctorIds[indexOfActiveDoctor].name
-        reportFound.oxygen.push({
-            level:oxygenLevel,
-            time:hour
-        });
-        reportFound.pulse.push({
-            level:pulseLevel,
-            time:hour
-        });
-        reportFound.temperature.push({
-            level:temperatureLevel,
-            time:hour
-        });
-
+        
+        if(reportFound.oxygen[reportFound.oxygen.length-1].time === hour){
+            reportFound.oxygen[reportFound.oxygen.length-1].level=oxygenLevel;
+            reportFound.pulse[reportFound.pulse.length-1].level=pulseLevel;
+            reportFound.temperature[reportFound.temperature.length-1].level=temperatureLevel;
+        }else{
+            reportFound.oxygen.push({
+                level:oxygenLevel,
+                time:hour
+            });
+            reportFound.pulse.push({
+                level:pulseLevel,
+                time:hour
+            });
+            reportFound.temperature.push({
+                level:temperatureLevel,
+                time:hour
+            });
+        }
+        
         try{
             reportFound.save();
         }catch(err){

@@ -357,8 +357,9 @@ const consultDoctor = async(req, res, next) => {
         return next(new HttpError('Invalid input.Please Check!',422));
     }
 
-    const patientId = req.body.patientId;
-    const doctorId = req.body.doctorId;
+    const {patientId, doctorId, age, city, state, gender, remarksForDoctor, chronicDisease, symptoms} = req.body;
+    // const patientId = req.body.patientId;
+    // const doctorId = req.body.doctorId;
 
     let patientFound;
     let doctorFound;
@@ -369,8 +370,23 @@ const consultDoctor = async(req, res, next) => {
         console.log(err);
         return next(new HttpError('Something went wrong', 500));
     }
+
     if (!doctorFound) {
         return next(new HttpError('Doctor not found', 500));
+    }
+
+    patientFound.age=age;
+    patientFound.city=city;
+    patientFound.state=state;
+    patientFound.gender=gender;
+    patientFound.remarksForDoctor = remarksForDoctor;
+    patientFound.chronicDisease= chronicDisease;
+    patientFound.symptoms=symptoms;
+    try{
+        patientFound.save();
+    }catch(err){
+        console.log(err);
+        return next(new HttpError('Patient data is not updated', 500));
     }
 
     var today = new Date();
@@ -378,7 +394,6 @@ const consultDoctor = async(req, res, next) => {
     var mm = String(today.getMonth() + 1).padStart(2, '0');
     var yyyy = today.getFullYear();
     today = dd + '-' + mm + '-' + yyyy;
-
 
     const indexOfPatient = doctorFound.patients.findIndex(patient => patient.patientId===patientId);
     if(indexOfPatient === -1){
@@ -426,6 +441,38 @@ const consultDoctor = async(req, res, next) => {
         }
     });
 
+    ///////////////////////////////////////////////////
+
+    // Notification of new patient which should be sended to the doctor 
+    let notification = {
+        'title': 'New Patient Request',
+        'text': patientFound.name
+    }
+
+    // Tokens of mobile devices
+    let fcm_tokens = [doctorFound.accessKey];
+
+    var notification_body = {
+        'notification': notification,
+        'registration_ids': fcm_tokens
+    }
+
+    try {
+        await fetch('https://fcm.googleapis.com/fcm/send', {
+            "method": 'POST',
+            "headers": {
+                "Authorization": "key=" + doctorKey,
+                "Content-Type": "application/json"
+            },
+            "body": JSON.stringify(notification_body)
+        });
+
+        console.log("Notification sended successfully to doctor");
+    } catch (err) {
+        console.log(err);
+        return next(new HttpError('Notification was not sended to the doctor.', 500));
+    }
+
     res.json({ doctor: doctorFound.toObject({ getters: true }), patient: patientFound.toObject({ getters: true }) });
 }
 
@@ -438,7 +485,7 @@ const addSymptomDetails = async (req,res,next) => {
     }
 
     const patientId = req.params.patientId;
-    const {symptoms, currentMedicines} = req.body;
+    const {symptoms} = req.body;
 
     let patientFound;
     try{
@@ -449,7 +496,6 @@ const addSymptomDetails = async (req,res,next) => {
     }
 
     patientFound.symptoms = symptoms;
-    patientFound.currentMedicines = currentMedicines;
     try{
         patientFound.save();
     }catch(err){
