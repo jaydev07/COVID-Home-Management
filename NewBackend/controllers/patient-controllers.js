@@ -194,7 +194,8 @@ const signup = async(req, res, next) => {
             state:newPatient.state,
             age:newPatient.age,
             gender:newPatient.gender,
-            token
+            token,
+            doctors: newPatient.doctors
         }  
     });
 }
@@ -514,3 +515,4 @@ exports.loginWithToken = loginWithToken;
 exports.addSymptomDetails = addSymptomDetails;
 exports.patientDailyRender = patientDailyRender;
 exports.getPatientData = getPatientData;
+    

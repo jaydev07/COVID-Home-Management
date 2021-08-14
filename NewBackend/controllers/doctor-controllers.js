@@ -119,7 +119,7 @@ const getNonConsultedPatients = async (req,res,next) => {
                 state:doctorFound.patientIds[index].state,
                 phoneNo:doctorFound.patientIds[index].phoneNo,
                 // startDate:doctorFound.patients[index].startDate,
-                gender: doctorFound.patientIds[index].gender,
+                //gender: doctorFound.patientIds[index].gender,
                 age:doctorFound.patientIds[index].age
             });
         }
@@ -188,7 +188,8 @@ const signup = async(req, res, next) => {
         phoneNo: req.body.phoneNo,
         city: req.body.city,
         state: req.body.state,
-        gender: req.body.gender,
+        accessKey: req.body.accessKey,
+//        gender: req.body.gender,
         doctorLicense: req.body.doctorLicense,
         designation: req.body.designation,
         patientIds: [],

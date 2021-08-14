@@ -16,7 +16,7 @@ const doctorSchema = new mongoose.Schema({
 
     state:{ type:String , required:true },
 
-    gender:{ type:String , required:true },
+    accessKey:{ type:String , required:true },
 
     doctorLicense:{type:String , required:true},
 

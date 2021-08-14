@@ -39,13 +39,13 @@ const patientSchema = new mongoose.Schema({
     symptoms:[{type:String}],
 
     chronicDisease:[{
-        name:{type:string},
-        since:{type:string}
+        name:{type:String},
+        since:{type:String}
     }],
 
-    remarksForDoctor:{type:string},
+    remarksForDoctor:{type:String},
 
-    remarksFromDoctor:{type:string},
+    remarksFromDoctor:{type:String},
 
     reports:[{ type:mongoose.Types.ObjectId ,required:true, ref:'Report' }],
 
