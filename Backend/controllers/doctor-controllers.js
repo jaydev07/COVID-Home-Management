@@ -9,13 +9,9 @@ const Doctor = require("../models/doctor-model");
 const Report = require("../models/report-model");
 const jwt = require('jsonwebtoken');
 
-
 //////////////////////////////////////////////////////////// GET requests /////////////////////////////////////////////////////////////
-// GetPatient APIs 
-
 
 // To get the whole list of patients of a perticular doctor
-// Name,id, phoneNo, (spO2, pulse, temp)last reading 
 const getPatients = async (req,res,next) => {
     const doctorId = req.params.doctorId;
 
@@ -92,7 +88,6 @@ const getPatients = async (req,res,next) => {
 }
 
 // To get the list of panding or non-consulted patients of a perticular doctor
-// symptoms, NoteFOrDoctor
 const getNonConsultedPatients = async (req,res,next) => {
     
     const doctorId = req.params.doctorId;
@@ -119,7 +114,7 @@ const getNonConsultedPatients = async (req,res,next) => {
                 city:doctorFound.patientIds[index].city,
                 state:doctorFound.patientIds[index].state,
                 phoneNo:doctorFound.patientIds[index].phoneNo,
-                // startDate:doctorFound.patients[index].startDate,
+                startDate:doctorFound.patients[index].startDate,
                 gender: doctorFound.patientIds[index].gender,
                 age:doctorFound.patientIds[index].age
             });
@@ -140,18 +135,7 @@ const getAllDoctors = async (req,res,next) => {
         return next(new HttpError('Something went wrong', 500));
     }
     
-    res.json({doctors:doctors.map(doc => {
-            doc.toObject({ getters: true })
-            return({ 
-                name:doc.name,
-                id:doc.id,
-                designation:doc.designation,
-                phoneNo:doc.phoneNo,
-                city:doc.city,
-                state:doc.state
-            })
-        }) 
-    });
+    res.json({doctors:doctors.map(doc => doc.toObject({ getters: true })) });
 }
 
 ////////////////////////////////////////////////////////// POST Requests ////////////////////////////////////////////////////////////////

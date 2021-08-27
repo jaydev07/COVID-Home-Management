@@ -4,10 +4,6 @@ const medicineSchema = new mongoose.Schema({
 
     name: { type: String, required: true },
 
-    startDate: { type: String, required: true },
-
-    endDate: { type: String, required: true },
-
     duration: { type: Number, required: true },
 
     active: { type: Boolean, required: true },
@@ -17,11 +13,13 @@ const medicineSchema = new mongoose.Schema({
     doctorId: { type: mongoose.Types.ObjectId, required: true, ref: 'Doctor' },
 
     time: {
-        morning: { type: Number },
-        afternoon: { type: Number },
-        evening: { type: Number }
+        morningBeforeB: { type: Number },
+        morningAfterB: { type: Number },
+        afternoonBeforeL: { type: Number },
+        afternoonAfterL: { type: Number },
+        eveningBeforeD: { type: Number },
+        eveningAfterD: { type: Number }
     }
-
 });
 
 

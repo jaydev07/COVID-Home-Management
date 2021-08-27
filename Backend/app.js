@@ -41,7 +41,7 @@ app.use((error,req,res,next) => {
 })
 
 mongoose
-    .connect("mongodb+srv://innoventx:innoventx123@cluster0.bhow9.mongodb.net/hackon?retryWrites=true&w=majority",{ useNewUrlParser: true,useUnifiedTopology: true  })
+    .connect("mongodb+srv://innoventx:innoventx123@cluster0.bhow9.mongodb.net/myFirstDatabase?retryWrites=true&w=majority",{ useNewUrlParser: true,useUnifiedTopology: true  })
     .then(() => {
         app.listen(8080,() => {
             console.log("server listening at 8080");

@@ -20,8 +20,6 @@ const patientSchema = new mongoose.Schema({
 
     age:{ type:Number , required:true },
 
-    accessKey: {type:String},
-
     doctorIds:[{ type:mongoose.Types.ObjectId ,required:true, ref:'Doctor' }],
 
     doctors:[{
@@ -31,21 +29,12 @@ const patientSchema = new mongoose.Schema({
         endDate:{type:String }
     }],
 
-    // currentMedicines:[{
-    //     medicine:{type:String},
-    //     startDate:{type:String }
-    // }],
-
-    symptoms:[{type:String}],
-
-    chronicDisease:[{
-        name:{type:string},
-        since:{type:string}
+    currentMedicines:[{
+        medicine:{type:String},
+        startDate:{type:String }
     }],
 
-    remarksForDoctor:{type:string},
-
-    remarksFromDoctor:{type:string},
+    symptoms:{type:String},
 
     reports:[{ type:mongoose.Types.ObjectId ,required:true, ref:'Report' }],
 
